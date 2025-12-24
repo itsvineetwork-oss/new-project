@@ -1,0 +1,621 @@
+\documentclass[14pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{siunitx}       
+\usepackage[table]{xcolor}   
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{a4paper,
+ total={170mm,257mm},
+ left=30mm,
+ right=30mm,
+ bottom=40mm,
+ top=44mm}
+ \sisetup{
+    group-separator={,},
+    group-minimum-digits=3,
+    round-mode=places,
+    round-precision=2,
+    table-format=3.2
+}
+\title{Braking Data Report}
+
+\author{
+    \textbf{Doc-No.: {{ doc_no }} } \\
+    Made By: {{ made_by }} \\
+    Checked By: {{ checked_by }} \\
+    Approved By: {{ approved_by }}
+}
+\date{\today}
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{
+  \AtPageUpperLeft{
+    \raisebox{-\height}{\includegraphics[width=\paperwidth]{logo.JPG}}
+  }
+  \AtPageLowerLeft{
+    \makebox[\paperwidth]{\includegraphics[height=2.3cm]{logo-1.JPG}}
+  }
+}
+\begin{document}
+
+\maketitle
+\section*{\underline{Introduction}}
+Braking distance refers to the total distance a vehicle travels from the time the driver perceives the need to brake (reaction distance) to when the vehicle comes to a complete stop (braking distance). The parking brake force ensures the vehicle remains stationary on an incline by countering the gravitational pull.\\
+
+This document explores the theoretical aspects and calculations of braking distances and parking brake forces required to keep the vehicle stationary on various gradients.
+
+\section{\underline{Braking Distance: Theory and Formulas}}
+
+\subsection{Total Braking Distance}
+
+\[
+\textbf{Total Braking Distance} = \textbf{Reaction Distance} + \textbf{Braking Distance}
+\]
+
+
+Where:
+
+\begin{enumerate}
+    \item \textbf{Reaction Distance} ($d_r$):
+    \[
+    d_r = \text{Speed} \times \text{Reaction Time}
+    \]
+    \item \textbf{Braking Distance} ($d_b$):
+    \[
+    d_b = \frac{v^2}{2 \times \mu \times g}
+    \]
+where:
+\begin{enumerate}
+    \item $v$ = vehicle speed (m/s)
+    \item $\mu$ = coefficient of friction
+    \item $g$ = acceleration due to gravity ($9.81~\text{m/s}^2$)
+\end{enumerate}
+\end{enumerate}
+\subsection{Braking Force}
+The braking force required to stop a vehicle can be calculated using Newton's second law:
+\[
+F_b = m \times a
+\]
+\newpage
+Where:
+\begin{enumerate}
+    \item $m$ = mass of the vehicle
+    \item $a$ = deceleration, which is influenced by the friction and braking efficiency
+\end{enumerate}
+\section{\underline{Parking Brake Force}}
+
+When a vehicle is stationary on an incline, the parking brake force must counteract the gravitational component pulling the vehicle downhill. This force depends on the vehicle's weight and the angle of the incline.
+\\
+\subsection{Gravitational Force Component on an Incline}
+The gravitational force acting on a vehicle on an inclined surface is split into two components: one perpendicular to the surface (normal force) and one parallel to the surface (driving the vehicle down the incline).\\
+
+
+For an incline with an angle $\theta$, the force needed to hold the vehicle stationary (parallel to the incline) is given by:
+\[
+F_{\text{holding}} = W \times \sin(\theta)
+\]
+Where:
+\begin{enumerate}
+    \item $W$ = weight of the vehicle = mass $\times$ gravitational acceleration ($m \times g$)
+    \item $\theta$ = angle of the incline
+\end{enumerate}
+\subsection{Calculating the Angle of Incline}
+For a gradient expressed as "1 in n" (rise over run), the angle $\theta$ can be calculated as:
+\[
+\theta = \arctan\left(\frac{1}{n}\right)
+\]\\
+\section{\underline{Application of Theory to the Vehicle}}
+For this specific vehicle:
+\begin{enumerate}
+    \item \textbf{Vehicle Mass (m)}: {{mass_kg}} kg
+    \item \textbf{Vehicle Weight (W)}: {{weight_n}} N (since $W = m \times g$)
+    \item \textbf{Reaction Time ($t_r$)}: 1.00 s
+    \item \textbf{Wheel Radius}: {{wheel_radius}} mm
+\end{enumerate}
+\newpage
+\section{\underline{Braking Distance Results}}
+\begin{figure}[ht]
+    \centering
+    \fbox{\includegraphics[width=0.6\linewidth]{breaking distance table.png}}
+    \caption{Stopping distance ( \textit{source: ref 1})}
+    \label{fig:enter-label}
+\end{figure}
+Fig 1 shows the table of max stopping distance and machine speed.
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{ Speed (km/h) } & \textbf{ Total Braking Dist. (m) } & \textbf{Braking Force (N)} \\
+\hline
+\text 8  & 3  & 9265.39 \\
+\hline
+\text 10  & 5  & 8717.18 \\
+\hline
+\text 16  & 12  & 9265.39 \\
+\hline
+\text 20  & 20 & 8717.18 \\
+\hline
+\text 24  & 28 & 8960.83 \\
+\hline
+\text 30  & 45 & 8696.88 \\
+\hline
+\text 32  & 50 & 8914.58 \\
+\hline
+\text 40  & 75 & 9282.31 \\
+\hline
+\text 50  & 135 & 8060.69 \\
+\hline
+\text 60  & 180 & 8707.03 \\
+\hline
+\end{tabular}
+}
+\caption{Calculated data for Braking Force at Various Speed in rail mode on straight level of track}
+\end{table}
+\vspace{0.2cm}\\
+\textbf{Calculation for Speed {{reference_speed_for_force}} km/h and Braking Distance {{reference_braking_dist}} m}\\
+To calculate the braking distance for a speed of {{reference_speed_for_force}} km/h, we first need to convert the speed to meters per second (m/s):
+\[
+    v_i = \frac{ {{reference_speed_for_force}} \times 1000 }{ 3600 } = {{ example_v_ms }} \, \text{m/s}
+\]
+Using the kinematic equation to calculate acceleration, we have:
+\[
+v_f^2 = v_i^2 + 2 \cdot a \cdot d
+\]
+Where:
+\begin{enumerate}
+    \item \( v_f = 0 \, \text{m/s} \) (final velocity),
+    \item \( v_i = {{ example_v_ms }} \, \text{m/s} \) (initial velocity),
+    \item \( a \) = acceleration (deceleration),
+    \item \( d = {{reference_braking_dist}} \, \text{m} \) (braking distance).
+\end{enumerate}
+Rearranging the equation to solve for a:
+\[
+a = \frac{v_f^2 - v_i^2}{2 \cdot d}
+\]
+Substituting the given values:
+\[
+a = \frac{0^2 - ({{ example_v_ms }})^2}{2 \cdot {{reference_braking_dist}}} \approx -{{example_decel}} \, \text{m/s}^2
+\]
+Thus, the deceleration is approximately -\( {{example_decel}} \, \text{m/s}^2 \).
+The reaction distance is calculated as:
+\[
+d_r = v_i \cdot t_r = {{ example_v_ms }} \, \text{m/s} \cdot 1.00 \, \text{s} = {{example_reaction_dist}} \, \text{m}
+\]
+Where:
+\begin{enumerate}
+    \item \( v_i = {{ example_v_ms }} \, \text{m/s} \) (initial velocity),
+    \item \( t_r = 1.00 \, \text{s} \) (reaction time).
+\end{enumerate}
+The total stopping distance is the sum of the reaction distance and the braking distance:
+\[
+\text{Total Stopping Distance} = d_r + d = {{example_reaction_dist}} + {{reference_braking_dist}} = {{example_total_stop}} \, \text{m}
+\]
+The braking force can now be calculated using the formula:
+\[
+F_b = m \cdot a
+\]
+Where:
+\begin{enumerate}
+    \item \( m = {{mass_kg}} \, \text{kg} \) (mass of the vehicle),
+    \item \( a = {{example_decel}} \, \text{m/s}^2 \) (deceleration).
+\end{enumerate}
+Substituting the values:
+\[
+F_b = {{mass_kg}} \cdot ({{example_decel}}) \approx {{example_fb}} \, \text{N}
+\]
+\\
+Thus, the braking force is approximately \( -{{example_fb}} \, \text{N} \) (in the opposite direction of motion, hence negative).
+\newpage
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{\textcolor{red}{ {Speed (km/h)} }} & \textbf{Speed (m/s)} & \textbf{\textcolor{red}{ {Braking Dist. (m)} }} & \textbf{Deceleration (m/s$^2$)} & \textbf{Reaction Dist. (m)} & \textbf{Total Stopping Dist. (m)} & \textbf{Braking Force (N)} \\
+\hline
+{% for speed, data in old_data_for_report.items() %}
+\textcolor{red}{ {{ speed }} } & {{ data.speed_ms }} & \textcolor{red}{ {{ data.braking_distance }} } & {{ data.deceleration }} & {{ data.reaction_distance }} & {{ data.total_stopping_distance }} & {{ data.braking_force }} \\
+{% endfor %}
+\hline
+\end{tabular}
+}
+\caption{Braking Force Calculation for Various Speeds and Braking Distances}
+\end{table}
+
+\color{red}{\textit{Note : the columns in red such as speed and breaking dist. are taken from \underline{ref. 1} DIN EN 15746-2:2021-05. The total breaking distance is less then the maximum stopping distance in the ref.}
+\color{black}
+\section{\underline{Conversion and Calculation for Parking Brake Forces}}
+For a parked vehicle, the parking brake must produce a force sufficient to counteract gravity on various inclines. Below are calculations for typical gradients:
+
+{% for calc in rail_detailed_calcs %}
+{% if calc.scenario == "Straight Track" and show_straight %}
+\subsubsection{\underline{Rail Gradient: {{ calc.gradient_value }}  ({{gradient_type}}) }}
+\begin{itemize}
+    \item \text{Gradient Angle ($\theta_{\text{max}}$)}:
+    \[
+    \theta_{\text{max}} = {% if gradient_type == 'Percentage (%)' %}arctan(\frac{ {{ calc.gradient_value }} }{100}) \approx {{ calc.angle_deg }}{% elif gradient_type == '1 in G' %}arctan(\frac{1}{ {{ calc.gradient_value }} }) \approx {{ calc.angle_deg }}{% else %}{{ calc.gradient_value }}{% endif %}^\circ
+    \]
+    \item \text{Holding Force on Max Gradient ($F_{\text{max}}$)}:
+    \[
+    F_{\text{max}} = {{ calc.weight_n }} \times \sin({{ calc.angle_deg }}^\circ) \approx {{ calc.fmax }} \, \text{N}
+    \]
+    \textbf{Moving straight at speed  \( {{ calc.speed_kmh }} \ \text{km/h} \)}
+    \item Vehicle mass, \( m = {{ calc.mass_kg }} \, \text{kg} \)
+    \item Initial speed, \( v_i = {{ calc.speed_kmh }} \, \text{km/h} = {{ calc.v_ms }} \, \text{m/s} \)
+    \item Slope angle, \( \theta = {{ calc.angle_deg }}^\circ \)
+    \item Maximum applied braking force, \( F_b = {{ calc.max_braking_force }} \, \text{N} \)
+    \item Maximum applied braking force per wheel,\\
+    $$F_{b}/\text{wheel} = \frac{ {{ calc.max_braking_force }} }{ {{ number_of_wheels }} } = {{ min_braking_force }} \, \text{N}$$
+    \item Gravitational acceleration, \( g = 9.81 \, \text{m/s}^2 \)
+\end{itemize}
+    \textbf{Step 1: Convert Speed to \( \text{m/s} \)}
+    \[
+    v_i = \frac{ {{ calc.speed_kmh }} \times 1000 }{ 3600 } = {{ calc.v_ms }} \, \text{m/s}
+    \]
+\textbf{Step 2: Calculate the Acceleration (Deceleration)}\\
+The net force acting on the vehicle is the sum of the braking force and the gravitational force component along the slope:
+\[
+F_g = m \cdot g \cdot \sin(\theta)
+\]  
+Substitute the values:
+\[
+F_g = {{ calc.mass_kg }} \cdot 9.81 \cdot \sin({{ calc.angle_deg }}^\circ) = {{ calc.f_g }} \, \text{N}
+\]
+The net force causing deceleration is:
+\[
+F_{\text{net}} = F_b - F_g = {{ calc.max_braking_force }} - {{ calc.f_g }} = {{ calc.f_net }} \, \text{N}
+\]
+Now, calculate the deceleration:
+\[
+a = \frac{F_{\text{net}} }{m} = \frac{ {{ calc.f_net }} }{ {{ calc.mass_kg }} } = {{ calc.a_deceleration }} \, \text{m/s}^2
+\]
+Since this is deceleration, \( a = -{{ calc.a_deceleration }} \, \text{m/s}^2 \).\\
+\\
+\textbf{Step 3: Calculate the Braking Distance}\\
+Use the kinematic equation to calculate the braking distance:\\
+\[
+v_f^2 = v_i^2 + 2 \cdot a \cdot d
+\]
+Rearranging to solve for \( d \):\\
+\[
+d = \frac{v_f^2 - v_i^2}{2 \cdot a}
+\]
+Substitute the values:\\
+\[
+d = \frac{0^2 - ({{ calc.v_ms }})^2}{2 \cdot ({{ calc.a_deceleration }})} = \frac{ {{ calc.v_ms_squared }} }{ {{ calc.a_deceleration_doubled }} } \approx {{ calc.braking_distance }} \, \text{m}
+\]
+\textbf{Step 4: Calculate the Total Stopping Distance}\\
+Assuming a reaction time \( t_r = 1 \, \text{s} \), the reaction distance is:\\
+\[
+d_r = v_i \cdot t_r = {{ calc.v_ms }} \cdot 1 = {{ calc.reaction_distance }} \, \text{m}
+\]
+The total stopping distance is:
+\[
+d_{\text{total}} = d_r\ + d = {{ calc.reaction_distance }} + {{ calc.braking_distance }} = {{ calc.total_stopping_distance }} \, \text{m}
+\]
+{% endif %}
+{% endfor %}
+
+{% for calc in rail_detailed_calcs %}
+{% if calc.scenario == "Moving down" and show_moving_down %}
+\subsubsection{\underline{Rail Gradient: {{ calc.gradient_value }} ({{gradient_type}}) }}
+\begin{itemize}
+    \item \text{Weight of vehicle (m)}: {{ calc.mass_kg }} kg ({{ calc.weight_n }} N)
+    \item \text{Gradient Angle ($\theta_{\text{max}}$)}:
+    \[
+    \theta_{\text{max}} = {% if gradient_type == 'Percentage (%)' %}arctan(\frac{ {{ calc.gradient_value }} }{100}) \approx {{ calc.angle_deg }}{% elif gradient_type == '1 in G' %}arctan(\frac{1}{ {{ calc.gradient_value }} }) \approx {{ calc.angle_deg }}{% else %}{{ calc.gradient_value }}{% endif %}^\circ
+    \]
+    \item \text{Holding Force on Max Gradient ($F_{\text{max}}$)}:
+    \[
+    F_{\text{max}} = {{ calc.weight_n }} \times \sin({{ calc.angle_deg }}^\circ) \approx {{ calc.fmax }} \, \text{N}
+    \]
+    \textbf{Moving down at speed  \( {{ calc.speed_kmh }} \ \text{km/h} \)}
+    \item Vehicle mass, \( m = {{ calc.mass_kg }} \, \text{kg} \)
+    \item Initial speed, \( v_i = {{ calc.speed_kmh }} \, \text{km/h} = {{ calc.v_ms }} \, \text{m/s} \)
+    \item Slope angle, \( \theta = {{ calc.angle_deg }}^\circ \)
+    \item Maximum applied braking force, \( F_b = {{ calc.max_braking_force }} \, \text{N} \)
+    \item Maximum applied braking force per wheel,\\
+    $$F_{b}/\text{wheel} = \frac{ {{ calc.max_braking_force }} }{ {{ number_of_wheels }} } = {{ min_braking_force }} \, \text{N}$$
+    \item Gravitational acceleration, \( g = 9.81 \, \text{m/s}^2 \)
+\end{itemize}
+    \textbf{Step 1: Convert Speed to \( \text{m/s} \)}
+    \[
+    v_i = \frac{ {{ calc.speed_kmh }} \times 1000 }{ 3600 } = {{ calc.v_ms }} \, \text{m/s}
+    \]
+\textbf{Step 2: Calculate the Acceleration (Deceleration)}\\
+The net force acting on the vehicle is the sum of the braking force and the gravitational force component along the slope:
+\[
+F_g = m \cdot g \cdot \sin(\theta)
+\]  
+Substitute the values:
+\[
+F_g = {{ calc.mass_kg }} \cdot 9.81 \cdot \sin({{ calc.angle_deg }}^\circ) = {{ calc.f_g }} \, \text{N}
+\]
+The net force causing deceleration is:
+\[
+F_{\text{net}} = F_b - F_g = {{ calc.max_braking_force }} - {{ calc.f_g }} = {{ calc.f_net }} \, \text{N}
+\]
+Now, calculate the deceleration:
+\[
+a = \frac{F_{\text{net}} }{m} = \frac{ {{ calc.f_net }} }{ {{ calc.mass_kg }} } = {{ calc.a_deceleration }} \, \text{m/s}^2
+\]
+Since this is deceleration, \( a = -{{ calc.a_deceleration }} \, \text{m/s}^2 \).\\
+\\
+\textbf{Step 3: Calculate the Braking Distance}\\
+Use the kinematic equation to calculate the braking distance:\\
+\[
+v_f^2 = v_i^2 + 2 \cdot a \cdot d
+\]
+Rearranging to solve for \( d \):\\
+\[
+d = \frac{v_f^2 - v_i^2}{2 \cdot a}
+\]
+Substitute the values:\\
+\[
+d = \frac{0^2 - ({{ calc.v_ms }})^2}{2 \cdot ({{ calc.a_deceleration }})} = \frac{ {{ calc.v_ms_squared }} }{ {{ calc.a_deceleration_doubled }} } \approx {{ calc.braking_distance }} \, \text{m}
+\]
+\textbf{Step 4: Calculate the Total Stopping Distance}\\
+Assuming a reaction time \( t_r = 1 \, \text{s} \), the reaction distance is:\\
+\[
+d_r = v_i \cdot t_r = {{ calc.v_ms }} \cdot 1 = {{ calc.reaction_distance }} \, \text{m}
+\]
+The total stopping distance is:
+\[
+d_{\text{total}} = d_r\ + d = {{ calc.reaction_distance }} + {{ calc.braking_distance }} = {{ calc.total_stopping_distance }} \, \text{m}
+\]
+{% endif %}
+{% endfor %}
+
+{% for calc in rail_detailed_calcs %}
+{% if calc.scenario == "Moving up" and show_moving_up %}
+\subsubsection{\underline{Rail Gradient: {{ calc.gradient_value }} ({{gradient_type}}) }}
+\begin{itemize}
+    \item \text{Weight of vehicle (m)}: {{ calc.mass_kg }} kg ({{ calc.weight_n }} N)
+    \item \text{Gradient Angle ($\theta_{\text{max}}$)}:
+    \[
+    \theta_{\text{max}} = {% if gradient_type == 'Percentage (%)' %}arctan(\frac{ {{ calc.gradient_value }} }{100}) \approx {{ calc.angle_deg }}{% elif gradient_type == '1 in G' %}arctan(\frac{1}{ {{ calc.gradient_value }} }) \approx {{ calc.angle_deg }}{% else %}{{ calc.gradient_value }}{% endif %}^\circ
+    \]
+    \item \text{Holding Force on Max Gradient ($F_{\text{max}}$)}:
+    \[
+    F_{\text{max}} = {{ calc.weight_n }} \times \sin({{ calc.angle_deg }}^\circ) \approx {{ calc.fmax }} \, \text{N}
+    \]
+    \textbf{Moving up at speed  \( {{ calc.speed_kmh }} \ \text{km/h} \)}
+    \item Vehicle mass, \( m = {{ calc.mass_kg }} \, \text{kg} \)
+    \item Initial speed, \( v_i = {{ calc.speed_kmh }} \, \text{km/h} = {{ calc.v_ms }} \, \text{m/s} \)
+    \item Slope angle, \( \theta = {{ calc.angle_deg }}^\circ \)
+    \item Maximum applied braking force, \( F_b = {{ calc.max_braking_force }} \, \text{N} \)
+    \item Maximum applied braking force per wheel,\\
+    $$F_{b}/\text{wheel} = \frac{ {{ calc.max_braking_force }} }{ {{ number_of_wheels }} } = {{ min_braking_force }} \, \text{N}$$
+    \item Gravitational acceleration, \( g = 9.81 \, \text{m/s}^2 \)
+\end{itemize}
+    \textbf{Step 1: Convert Speed to \( \text{m/s} \)}
+    \[
+    v_i = \frac{ {{ calc.speed_kmh }} \times 1000 }{ 3600 } = {{ calc.v_ms }} \, \text{m/s}
+    \]
+\textbf{Step 2: Calculate the Acceleration (Deceleration)}\\
+The net force acting on the vehicle is the sum of the braking force and the gravitational force component along the slope:
+\[
+F_g = m \cdot g \cdot \sin(\theta)
+\]  
+Substitute the values:
+\[
+F_g = {{ calc.mass_kg }} \cdot 9.81 \cdot \sin({{ calc.angle_deg }}^\circ) = {{ calc.f_g }} \, \text{N}
+\]
+The net force causing deceleration is:
+\[
+F_{\text{net}} = F_b + F_g = {{ calc.max_braking_force }} + {{ calc.f_g }} = {{ calc.f_net }} \, \text{N}
+\]
+Now, calculate the deceleration:
+\[
+a = \frac{F_{\text{net}} }{m} = \frac{ {{ calc.f_net }} }{ {{ calc.mass_kg }} } = {{ calc.a_deceleration }} \, \text{m/s}^2
+\]
+Since this is deceleration, \( a = -{{ calc.a_deceleration }} \, \text{m/s}^2 \).\\
+\\
+\textbf{Step 3: Calculate the Braking Distance}\\
+Use the kinematic equation to calculate the braking distance:\\
+\[
+v_f^2 = v_i^2 + 2 \cdot a \cdot d
+\]
+Rearranging to solve for \( d \):\\
+\[
+d = \frac{v_f^2 - v_i^2}{2 \cdot a}
+\]
+Substitute the values:\\
+\[
+d = \frac{0^2 - ({{ calc.v_ms }})^2}{2 \cdot ({{ calc.a_deceleration }})} = \frac{ {{ calc.v_ms_squared }} }{ {{ calc.a_deceleration_doubled }} } \approx {{ calc.braking_distance }} \, \text{m}
+\]
+\textbf{Step 4: Calculate the Total Stopping Distance}\\
+Assuming a reaction time \( t_r = 1 \, \text{s} \), the reaction distance is:\\
+\[
+d_r = v_i \cdot t_r = {{ calc.v_ms }} \cdot 1 = {{ calc.reaction_distance }} \, \text{m}
+\]
+The total stopping distance is:
+\[
+d_{\text{total}} = d_r\ + d = {{ calc.reaction_distance }} + {{ calc.braking_distance }} = {{ calc.total_stopping_distance }} \, \text{m}
+\]
+{% endif %}
+{% endfor %}
+\vspace{1cm}
+
+{% if road_detailed_calcs %}
+\section{\underline{Calculations for EBD on Road Mode}}
+{% for calc in road_detailed_calcs %}
+\subsection{\underline{Road Gradient : {{ road_gradient_input }} {% if road_gradient_type == 'Percentage (%)' %}Percentage (\%){% elif road_gradient_type == '1 in G' %}1 in G{% else %}Degree (\textdegree){% endif %} }}
+
+\textbf{Gradient Angle ($\theta_{\text{max}}$)}:
+    \[
+    \theta_{\text{max}} = {% if road_gradient_type == 'Percentage (%)' %}arctan(\frac{ {{ road_gradient_input }} }{100}) \approx {{ road_angle_deg }}{% elif road_gradient_type == '1 in G' %}arctan(\frac{1}{ {{ road_gradient_input }} }) \approx {{ road_angle_deg }}{% else %}{{ road_gradient_input }}{% endif %}^\circ
+    \]
+\textbf{Holding Force on Gradient ($F_{\text{max}}$)}:
+    \[
+    F_{\text{max}} = {{ calc.weight_n }} \times \sin({{ road_angle_deg }}^\circ) \approx {{ calc.fmax }} \, \text{N}
+    \]
+\subsubsection{\underline{Moving {{ calc.scenario }} at ( {{ calc.speed_kmh }} \ \text{km/h} :)}}
+\begin{itemize}
+    
+    \item Vehicle mass, \( m = {{ calc.mass_kg }} \, \text{kg} \)
+    \item Initial speed, \( v_i = {{ calc.speed_kmh }} \, \text{km/h} = {{ calc.v_ms }} \, \text{m/s} \)
+    \item Slope angle, \( \theta = {{ road_angle_deg }}^\circ \)
+    \item Gravitational acceleration, \( g = 9.81 \, \text{m/s}^2 \)
+    \item Normal force, \( (N) = {{ calc.normal_force }} \, \text{N} \)
+    \item friction of coefficient, \(\mu   = {{ calc.friction }} \)
+    
+\end{itemize}
+\textbf{Step 1: Convert Speed to \( \text{m/s} \)}
+    \[
+    v_i = \frac{ {{ calc.speed_kmh }} \times 1000 }{ 3600 } = {{ calc.v_ms }} \, \text{m/s}
+    \]
+\textbf{Step 2: Calculate the Gravitational Force Component Aloge the Slope}\\
+The gravitational force component along the slope is:
+\[
+F_g = m \cdot g \cdot \sin(\theta) = {{ calc.mass_kg }} \cdot 9.81 \cdot \sin({{ calc.angle_deg }}^\circ) = {{ calc.f_g }} \, \text{N}
+\]
+\textbf{Step 3: Calculate the Maximum Braking Force (Friction)}
+
+\[
+F_b = \mu \cdot F_N = {{ calc.friction }} \times {{ calc.normal_force }} = {{ calc.fb_friction }} \, \text{N}
+\]
+
+The net force causing deceleration is:
+\[
+F_{\text{net}} = F_b - F_g = {{ calc.fb_friction }} - {{ calc.f_g }} = {{ calc.f_net }} \, \text{N}
+\]
+\textbf{Step 4: Calculate Net Force and Deceleration}\\
+Now, calculate the deceleration:
+\[
+a = \frac{F_{\text{net}} }{m} = \frac{ {{ calc.f_net }} }{ {{ calc.mass_kg }} } \approx {{ calc.a_deceleration }} \, \text{m/s}^2 (thus a \approx -{{ calc.a_deceleration }} \, \text{m/s}^2)
+\]
+Since this is deceleration, \( a = -{{ calc.a_deceleration }} \, \text{m/s}^2 \).\\
+\\
+\textbf{Step 5: Calculate the Braking Distance}\\
+Use the kinematic equation to calculate the braking distance:\\
+\[
+v_f^2 = v_i^2 + 2 \cdot a \cdot d
+\]
+Rearranging to solve for \( d \):\\
+\[
+d = \frac{v_f^2 - v_i^2}{2 \cdot a} = \frac{0^2 - ({{ calc.v_ms }})^2}{2 \cdot ({{ calc.a_deceleration }})} = \frac{ {{ calc.v_ms_squared }} }{ {{ calc.a_deceleration_doubled }} } \approx {{ calc.braking_distance }} \, \text{m}
+\]
+\textbf{Step 6: Calculate the Total Stopping Distance}\\
+Assuming a reaction time \( t_r = 1 \, \text{s} \), the reaction distance is:\\
+\[
+d_r = v_i \cdot t_r = {{ calc.v_ms }} \cdot 1 = {{ calc.reaction_distance }} \, \text{m}
+\]
+The total stopping distance is:
+\[
+d_{\text{total}} = d_r\ + d = {{ calc.reaction_distance }} + {{ calc.braking_distance }} = {{ calc.total_stopping_distance }} \, \text{m}
+\]
+\vspace{0.5cm}
+{% endfor %}
+{% endif %}
+
+{% if show_gbr %}
+\section {\underline{Gross Braking Ratio (GBR)}}
+The \textbf{Gross Braking Ratio (GBR)} is an important metric used in vehicle braking performance
+analysis. It represents the relationship between the maximum braking force and the vehicle’s gross
+weight. In simpler terms, the GBR is a measure of how effectively a vehicle can be braked in
+relation to its weight. A higher GBR indicates better braking performance.
+\subsection{Formula for Gross Braking Ratio (GBR)}
+The formula for calculating the Gross Braking Ratio is:
+\[
+GBR = \frac{\text{Max Braking Force}}{\text{Vehicle Weight}}
+\]
+Where:
+\begin{itemize}
+    \item $F_b$ = Braking force (in Newtons)
+    \item $W$ = Gross Weight of the Vehicle (in Newtons)
+\end{itemize}
+The Gross Weight W is calculated as:
+\[
+W = m \times g
+\]
+where:
+\begin{itemize}
+    \item m = Mass of the vehicle (in kilograms)
+    \item g = Acceleration due to gravity (approximately \(9.81 \, \text{m/s}^2\))
+\end{itemize}
+\subsection{Example Calculation}
+Let us calculate the Gross Braking Ratio for the vehicle mentioned in the report.
+\begin{itemize}
+    \item \text{Vehicle Mass} = {{ mass_kg }} kg
+    \item \text{Max Braking Force} = {{ max_braking_force }} N
+\end{itemize}
+The \textbf{Gross Weight (W)} of the vehicle is calculated as:
+\[
+W = m \times g = {{ mass_kg }} \times 9.81 \approx {{ weight_n }} \, \text{N}
+\]
+Now, applying the formula for GBR:
+\[
+GBR = \frac{ {{ max_braking_force }} }{ {{ weight_n }} } \approx {{ gbr_percentage }}\%
+\]
+
+{% endif %}
+
+
+
+
+
+\section{Summary }
+\begin{itemize}
+    {% set all = [] %}
+    {% if rail_detailed_calcs %}{% for c in rail_detailed_calcs %}{% set _ = all.append(c) %}{% endfor %}{% endif %}
+    {% if road_detailed_calcs %}{% for c in road_detailed_calcs %}{% set _ = all.append(c) %}{% endfor %}{% endif %}
+    \item The vehicle's total braking distance increases with speed, influenced by both reaction time and braking distance.
+
+    {# Parking brake forces - show all unique gradients from rail calcs #}
+    {% if rail_detailed_calcs %}
+    {% set parking_forces = {} %}
+    {% for c in rail_detailed_calcs %}
+        {% if c.gradient_value not in parking_forces %}
+            {% set _ = parking_forces.update({c.gradient_value: c.fmax}) %}
+        {% endif %}
+    {% endfor %}
+    {% if parking_forces %}
+    \item The parking brake must generate a force of {% for grad, force in parking_forces.items() %}{% if not loop.first %}{% if loop.last %} and {% else %}, {% endif %}{% endif %}{{ force }} N on a rail gradient of {% if gradient_type == 'Percentage (%)' %}{{ grad }}\%{% else %}1 in {{ grad }}{% endif %}{% endfor %} to hold the vehicle stationary.
+    {% endif %}
+    {% endif %}
+
+    {# Rail mode - show stopping distances for all Moving down scenarios #}
+    {% if rail_detailed_calcs %}
+    {% set rail_down_calcs = [] %}
+    {% for c in rail_detailed_calcs %}
+        {% if c.scenario == 'Moving down' %}
+            {% set _ = rail_down_calcs.append(c) %}
+        {% endif %}
+    {% endfor %}
+    {% if rail_down_calcs %}
+    \item The deceleration required to stop the vehicle on a gradient is affected by both braking force and the gravitational force component along the slope. {% for c in rail_down_calcs %}{% if not loop.first %}{% if loop.last %} and {% endif %}{% endif %}At {{ c.speed_kmh }} km/h on a {% if gradient_type == 'Percentage (%)' %}{{ c.gradient_value }}\%{% else %}1 in {{ c.gradient_value }}{% endif %} falling gradient, the stopping distance is {{ c.total_stopping_distance }} m{% if not loop.last %}, {% endif %}{% endfor %}. This data shows that stopping distance increases with increase in speed.
+    {% endif %}
+    {% endif %}
+
+    {# Road mode - show stopping distances for all Moving down scenarios #}
+    {% if road_detailed_calcs %}
+    {% set road_down_calcs = [] %}
+    {% for c in road_detailed_calcs %}
+        {% if c.scenario == 'Moving down' %}
+            {% set _ = road_down_calcs.append(c) %}
+        {% endif %}
+    {% endfor %}
+    {% if road_down_calcs %}
+    \item As per calculation on road mode, total braking distance decreases by decreasing the vehicle speed. {% for c in road_down_calcs %}{% if not loop.first %}{% if loop.last %} and {% endif %}{% endif %}Total braking distance at {% if road_gradient_type == 'Percentage (%)' %}{{ c.gradient_value }}\%{% else %}1 in {{ c.gradient_value }}{% endif %} falling gradient at {{ c.speed_kmh }} km/h is {{ c.total_stopping_distance }} m{% if not loop.last %}, {% endif %}{% endfor %}.
+    {% endif %}
+    {% endif %}
+\end{itemize}
+
+
+
+{% if show_gbr %}
+
+\begin{itemize}
+    \item The Gross Braking Ratio (GBR) for the vehicle is approximately {{ gbr_percentage }}\%, meaning the vehicle can apply a braking force equal to {{ gbr_percentage }}\% of its gross weight. This value helps assess whether the braking system is sufficiently powerful for the vehicle's weight.
+\end{itemize}
+{% endif %}
+
+\section{Reference}
+\begin{itemize}
+    \item  DIN EN 15746-2 , Section 5.24- Breaking system.
+\end{itemize}
+
+
+\end{document}

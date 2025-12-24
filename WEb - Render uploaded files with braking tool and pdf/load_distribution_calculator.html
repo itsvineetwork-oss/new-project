@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Load Distribution Calculation System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-gray-100">
+  <nav class="bg-blue-900 text-white shadow-lg">
+    <div class="mx-auto px-4">
+      <div class="flex justify-between">
+        <div class="flex space-x-7">
+          <div>
+            <a href="/" class="flex items-center py-2 px-2 shrink-0">
+              <img src="/logo.png" alt="Logo" class="h-12 w-auto mr-2" />
+            </a>
+          </div>
+          <div class="hidden md:flex items-center space-x-1">
+            <a href="/" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Home</a>
+            <a href="/calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Hydraulic</a>
+            <a href="/qmax" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Qmax</a>
+            <a href="/load_distribution" class="py-4 px-2 text-white bg-blue-800 font-semibold">Load Distribution</a>
+            <a href="/tractive_effort" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Tractive Effort</a>
+            <a href="/vehicle_performance" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Vehicle Performance</a>
+            <a href="/braking" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Braking</a>
+          </div>
+        </div>
+        
+        <div class="md:hidden flex items-center">
+          <button class="outline-none mobile-menu-button">
+            <svg class="w-6 h-6 text-gray-300 hover:text-white" x-show="!showMenu" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="hidden mobile-menu">
+      <ul class="">
+        <li><a href="/" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Home</a></li>
+        <li><a href="/calculator" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Hydraulic</a></li>
+        <li><a href="/qmax" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Qmax</a></li>
+        <li><a href="/load_distribution" class="block text-sm px-2 py-4 text-white bg-blue-800 font-semibold">Load Distribution</a></li>
+        <li><a href="/tractive_effort" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Tractive Effort</a></li>
+        <li><a href="/vehicle_performance" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Vehicle Performance</a></li>
+        <li><a href="/braking" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Braking</a></li>
+      </ul>
+    </div>
+    <script>
+      const btn = document.querySelector("button.mobile-menu-button");
+      const menu = document.querySelector(".mobile-menu");
+      btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+    </script>
+  </nav>
+  
+  <div id="main-content" class="mx-auto max-w-screen-xl mt-4 p-4 bg-white rounded-xl shadow-lg">
+    <header class="bg-blue-900 text-white py-3 px-4 rounded-t-xl flex items-center gap-3"><span class="text-2xl">⚖️</span><h1 class="text-xl font-bold">LOAD DISTRIBUTION SAFETY CALCULATOR</h1></header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+
+        <div class="flex flex-col gap-4">
+            <section class="border-2 border-green-500 rounded-xl p-3">
+              <h2 class="bg-green-600 text-white text-center rounded-md py-1 mb-2 font-semibold">1. VEHICLE & LOAD INPUTS</h2>
+              <div class="grid grid-cols-1 gap-3">
+                <label>Configuration:
+                    <select id="config_type" class="input">
+                        <option value="Bogie">Bogie</option>
+                        <option value="Axle">Axle</option>
+                    </select>
+                </label>
+                <label>Total Load (Ton):
+                    <input class="input" id="total_load" value="28.0" type="number" />
+                </label>
+                <label>Front Load (%):
+                    <input class="input" id="front_percent" value="50.0" type="number" min="0" max="100" />
+                </label>
+                <label>Q1 (% of Front):
+                    <input class="input" id="q1_percent" value="50.0" type="number" min="0" max="100" />
+                </label>
+                <label>Q3 (% of Rear):
+                    <input class="input" id="q3_percent" value="50.0" type="number" min="0" max="100" />
+                </label>
+              </div>
+            </section>
+            
+            <section class="border-2 border-gray-400 rounded-xl p-3">
+                <h2 class="bg-gray-500 text-white text-center rounded-md py-1 mb-2 font-semibold">VEHICLE DIAGRAM</h2>
+                <div class="flex justify-center bg-white p-2 rounded">
+                    <img src="/Diagram.png" alt="Vehicle Diagram" class="max-w-full h-auto rounded object-contain" onerror="this.alt='Diagram.png not found in root folder'; this.src='https://placehold.co/400x250/cccccc/777777?text=Diagram.png+Not+Found';">
+                </div>
+            </section>
+        </div>
+        
+        <div class="flex flex-col gap-4">
+            <div class="space-y-3 text-center p-4 border-2 border-gray-300 rounded-xl bg-gray-50 md:sticky md:top-4">
+                <button id="calculateBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  📊 CALCULATE
+                </button>
+                <button id="saveDocBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  💾 SAVE DOCUMENT
+                </button>
+            </div>
+
+            <section class="border-2 border-blue-900 p-3 rounded-xl">
+              <h2 class="text-blue-900 font-semibold text-lg mb-2">📊 SUMMARY</h2>
+              
+              <div id="status_label" class="text-2xl font-bold text-gray-500 mb-1">STATUS</div>
+              <div id="status_detail_label" class="text-lg text-gray-500 italic mb-4">Enter inputs and click 'Calculate' to see results.</div>
+              
+              <hr class="mb-4">
+
+              <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm md:text-base">
+                <span class="font-bold text-right">Front/Rear Load:</span>
+                <span id="res_front_rear_load">-</span>
+                
+                <span class="font-bold text-right">Q1 / Q2:</span>
+                <span id="res_q1_q2">-</span>
+                
+                <span class="font-bold text-right">Q3 / Q4:</span>
+                <span id="res_q3_q4">-</span>
+                
+                <span class="font-bold text-right">Lowest Q (QL):</span>
+                <span id="res_ql">-</span>
+                
+                <span class="font-bold text-right">Q (Avg Heavier):</span>
+                <span id="res_q">-</span>
+                
+                <span class="font-bold text-right">ΔQ (Q - QL):</span>
+                <span id="res_delta_q">-</span>
+                
+                <span class="font-bold text-right text-blue-700">ΔQ/Q Ratio:</span>
+                <span id="res_delta_q_ratio" class="font-bold text-blue-700">-</span>
+                
+                <span class="font-bold text-right">Limit:</span>
+                <span id="res_limit">-</span>
+              </div>
+            </section>
+
+            <section class="border-2 border-purple-600 p-3 rounded-xl flex-grow flex flex-col">
+              <h2 class="text-purple-700 font-semibold text-lg mb-2">🧮 DETAILED STEPS</h2>
+              <pre id="resultsBox" class="bg-gray-50 p-3 rounded overflow-auto h-full flex-grow text-sm font-mono whitespace-pre-wrap min-h-[300px]">
+        ⌛ Detailed steps will appear here after calculation...
+              </pre>
+            </section>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    let lastInputData = null;
+    
+    // API URL Blank for automatic detection (Render friendly)
+    const API_BASE_URL = ''; 
+
+    // --- DOM Elements ---
+    const statusLabel = document.getElementById('status_label');
+    const statusDetailLabel = document.getElementById('status_detail_label');
+    const resultsBox = document.getElementById('resultsBox');
+    
+    // Result value spans
+    const res = {
+        front_rear_load: document.getElementById('res_front_rear_load'),
+        q1_q2: document.getElementById('res_q1_q2'),
+        q3_q4: document.getElementById('res_q3_q4'),
+        ql: document.getElementById('res_ql'),
+        q: document.getElementById('res_q'),
+        delta_q: document.getElementById('res_delta_q'),
+        delta_q_ratio: document.getElementById('res_delta_q_ratio'),
+        limit: document.getElementById('res_limit')
+    };
+    
+    // Input elements
+    const configInput = document.getElementById('config_type');
+    const totalLoadInput = document.getElementById('total_load');
+
+    // --- Function to collect input data ---
+    function collectRawData() {
+        return {
+            config_type: configInput.value,
+            total_load: totalLoadInput.value,
+            front_percent: document.getElementById('front_percent').value,
+            q1_percent: document.getElementById('q1_percent').value,
+            q3_percent: document.getElementById('q3_percent').value
+        };
+    }
+    
+    // --- Update default total load based on config ---
+    function updateTotalLoadDefault() {
+        const config = configInput.value;
+        const currentLoad = totalLoadInput.value;
+        
+        const defaults = {"Bogie": "28.0", "Axle": "19.0"};
+        const oppositeDefaults = {"Bogie": "19.0", "Axle": "28.0"};
+
+        if (currentLoad === "" || currentLoad === oppositeDefaults[config]) {
+            totalLoadInput.value = defaults[config];
+        }
+    }
+
+    // --- API Call Function ---
+    async function handleCalculateClick() {
+      const calculateBtn = document.getElementById("calculateBtn");
+      resultsBox.textContent = "Calculating... (Connecting to API)";
+      statusLabel.textContent = "Calculating...";
+      statusLabel.className = "text-2xl font-bold text-gray-500 mb-1";
+      statusDetailLabel.textContent = "Please wait...";
+      calculateBtn.disabled = true;
+      
+      const rawData = collectRawData();
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/calculate_load_distribution`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rawData),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || "Unknown error");
+        }
+
+        // Update detailed steps
+        resultsBox.textContent = data.report;
+        
+        // Update summary
+        const results = data.results; 
+        
+        if (results.status === 'success') {
+            statusLabel.textContent = "✔ PASS";
+            statusLabel.className = "text-2xl font-bold text-green-600 mb-1";
+            statusDetailLabel.className = "text-lg text-green-600 mb-4";
+        } else {
+            statusLabel.textContent = "✖ FAIL";
+            statusLabel.className = "text-2xl font-bold text-red-600 mb-1";
+            statusDetailLabel.className = "text-lg text-red-600 mb-4";
+        }
+        statusDetailLabel.textContent = results.status_msg;
+
+        res.front_rear_load.textContent = `${results.front_load.toFixed(2)} Ton / ${results.rear_load.toFixed(2)} Ton`;
+        res.q1_q2.textContent = `${results.q_values.Q1.toFixed(2)} Ton / ${results.q_values.Q2.toFixed(2)} Ton`;
+        res.q3_q4.textContent = `${results.q_values.Q3.toFixed(2)} Ton / ${results.q_values.Q4.toFixed(2)} Ton`;
+        res.ql.textContent = `${results.ql_name} = ${results.ql_value.toFixed(2)} Ton`;
+        res.q.textContent = `${results.q_value.toFixed(2)} Ton (${results.q_formula_str})`;
+        res.delta_q.textContent = `${results.delta_q.toFixed(2)} Ton`;
+        res.delta_q_ratio.textContent = `${(results.delta_q_by_q * 100).toFixed(2)}%`;
+        res.limit.textContent = `${(results.limit * 100).toFixed(0)}%`;
+
+        lastInputData = rawData; 
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        const errorMsg = `--- ERROR ---\n${error.message}\n\nIs the FastAPI server running?`;
+        resultsBox.textContent = errorMsg;
+        statusLabel.textContent = "ERROR";
+        statusLabel.className = "text-2xl font-bold text-red-600 mb-1";
+        statusDetailLabel.textContent = error.message;
+        statusDetailLabel.className = "text-lg text-red-600 mb-4";
+        lastInputData = null;
+      } finally {
+          calculateBtn.disabled = false;
+      }
+    }
+
+    // --- .docx download function ---
+    async function handleSaveDocumentClick() {
+        const saveDocBtn = document.getElementById("saveDocBtn");
+        
+        if (!lastInputData) {
+            resultsBox.textContent = "--- ERROR ---\nFirst, generate a successful report by clicking 'CALCULATE' button.";
+            return;
+        }
+        
+        saveDocBtn.textContent = "Generating...";
+        saveDocBtn.disabled = true;
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/download_load_distribution_report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(lastInputData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to download file");
+            }
+
+            const blob = await response.blob();
+            const contentDisposition = response.headers.get('content-disposition');
+            let filename = "Load_Distribution_Report.docx"; // Default
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (filenameMatch && filenameMatch.length > 1) {
+                    filename = filenameMatch[1];
+                }
+            }
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        } catch (error) {
+            console.error("Download Error:", error);
+            resultsBox.textContent = `--- DOCUMENT DOWNLOAD ERROR ---\n${error.message}`;
+        } finally {
+            saveDocBtn.textContent = "💾 SAVE DOCUMENT";
+            saveDocBtn.disabled = false;
+        }
+    }
+
+    // --- Add event listeners ---
+    document.getElementById("calculateBtn").addEventListener("click", handleCalculateClick);
+    document.getElementById("saveDocBtn").addEventListener("click", handleSaveDocumentClick);
+    configInput.addEventListener('change', updateTotalLoadDefault);
+
+    // --- Initial setup ---
+    updateTotalLoadDefault(); // Set correct default load on page load
+  </script>
+
+  <style>
+    .input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; width: 100%; margin-top: 4px; }
+    .input:disabled { background-color: #f3f4f6; color: #9ca3af; }
+    label { font-size: 0.875rem; font-weight: 500; color: #374151; display: block; }
+  </style>
+</body>
+</html>

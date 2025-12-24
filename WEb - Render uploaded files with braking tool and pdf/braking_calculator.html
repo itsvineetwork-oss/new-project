@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braking Performance Calculator - Premnath Engineering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --primary-blue: #00529B;
+            --accent-orange: #fd7e14;
+            --accent-green: #28a745;
+            --accent-blue: #007bff;
+            --gray-bg: #f4f7f6;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--gray-bg);
+            color: var(--text-dark);
+            line-height: 1.4;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            padding-top: 0; /* Space for fixed navbar if needed */
+        }
+
+        /* --- LAYOUT CONTAINER --- */
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            max-width: 1400px;
+            margin-top: 0; /* Remove top margin since navbar is now separate */
+        }
+
+        /* --- HEADER SECTION --- */
+        .header {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0;
+            color: var(--white);
+        }
+
+        .author-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .author-inputs label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.95);
+            white-space: nowrap;
+        }
+
+        .author-inputs input {
+            padding: 6px 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 120px;
+            min-width: 100px;
+            text-align: left;
+            transition: all 0.2s;
+            background-color: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        .author-inputs input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+            border-color: rgba(255,255,255,0.8);
+            background-color: #ffffff;
+        }
+
+        /* --- INPUT LAYOUT (FLEXBOX) --- */
+        .input-sections {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .input-frame {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            /* Flex Basis controls initial size */
+            flex: 1 1 240px; 
+            min-width: 0;
+        }
+
+        /* Force Actions to take full width on new row */
+        .full-width-span {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+
+        .frame-title {
+            background: var(--accent-orange);
+            color: var(--white);
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .section-content {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        /* --- FORM ELEMENTS --- */
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2px;
+            gap: 8px;
+            /* Ensure horizontal layout by default */
+            flex-direction: row; 
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #444;
+            flex: 1; 
+            margin: 0;
+            white-space: normal;
+            line-height: 1.2;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="number"],
+        .input-group select {
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 75px; 
+            flex: 0 0 75px; /* Don't shrink/grow, stay 75px */
+            font-size: 0.85rem;
+            text-align: right;
+            transition: border-color 0.2s;
+            height: 28px;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .input-group input:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        /* Radio & Checkbox Groups */
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+            align-items: center;
+            flex: 2;
+        }
+
+        .radio-group label,
+        .checkbox-group label {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 0;
+            cursor: pointer;
+            white-space: nowrap;
+            color: #333;
+            flex: 0 0 auto;
+        }
+
+        /* --- ACTIONS GRID (Solves iPad Vertical Stack Issue) --- */
+        .actions-content {
+            display: grid;
+            /* Default: 4 columns for desktop/tablet landscape */
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 8px;
+            padding: 10px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: filter 0.2s, transform 0.1s;
+            margin: 0;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+            height: 38px;
+        }
+
+        .btn:hover { filter: brightness(110%); }
+        .btn:active { transform: translateY(1px); }
+
+        .btn-green { background-color: var(--accent-green); }
+        .btn-blue { background-color: var(--accent-blue); }
+        .btn-orange { background-color: var(--accent-orange); }
+        .btn-purple { background-color: #9333ea; }
+
+        /* --- RESULTS SECTION --- */
+        .results-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .results-section {
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .main-results {
+            flex: 3 1 600px;
+            min-width: 0; 
+        }
+
+        .side-table {
+            flex: 1 1 300px;
+            min-width: 0;
+        }
+
+        .results-header {
+            background: #4a4a4a;
+            color: var(--white);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* --- TABLES --- */
+        .results-table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 5px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .main-results .results-table {
+            min-width: 800px; /* Ensure columns don't crush */
+        }
+
+        .results-table th, 
+        .results-table td {
+            padding: 8px 6px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .results-table th {
+            background-color: #f8f9fa;
+            color: #444;
+            font-weight: 700;
+            border-bottom: 2px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .results-table tr:hover {
+            background-color: #fdfdfd;
+        }
+
+        .status-pass { color: var(--accent-green); font-weight: bold; }
+        .status-fail { color: #dc3545; font-weight: bold; }
+
+        .calculation-mode-container { display: none; }
+        .calculation-mode-container.active { display: block; }
+        .standard-distance-section { display: none; }
+        .standard-distance-section.show { display: block; }
+
+        .results-table-container::-webkit-scrollbar { height: 6px; }
+        .results-table-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+        /* --- NAVIGATION STYLES --- */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            text-decoration: none;
+        }
+
+        nav .active a,
+        nav a.active {
+            background-color: rgba(59, 130, 246, 0.8) !important;
+            color: #ffffff !important;
+        }
+
+        /* Mobile menu transitions */
+        .mobile-menu {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        
+        /* Desktop Tweaks */
+        @media (min-width: 1024px) {
+            .header { flex-direction: row; justify-content: space-between; }
+            .author-inputs { width: auto; justify-content: flex-end; }
+            .title { text-align: left; }
+        }
+
+        /* iPad / Tablet (Portrait & Landscape) */
+        @media (max-width: 1023px) and (min-width: 601px) {
+            .input-sections { justify-content: space-between; }
+            .input-frame { flex: 1 1 48%; } /* 2 Columns */
+            
+            /* Keep Actions in 1 row (4 columns) on Tablet */
+            .actions-content { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* --- MOBILE OPTIMIZATIONS (iPhone XR / Phones) --- */
+        @media (max-width: 600px) {
+            .container { padding: 5px; }
+            
+            /* Header Compact */
+            .header { padding: 10px; gap: 8px; margin-bottom: 8px; }
+            .title { font-size: 1.1rem; }
+            
+            /* Author inputs compact grid */
+            .author-inputs { 
+                display: grid; 
+                grid-template-columns: auto 1fr; /* Label Input */
+                gap: 8px 12px; 
+                width: 100%;
+                align-items: center;
+            }
+            .author-inputs label { 
+                text-align: right; 
+                font-size: 0.8rem;
+            }
+            .author-inputs input { 
+                width: 100%; 
+                min-width: 120px;
+                font-size: 14px;
+                padding: 8px;
+            }
+            .author-inputs button { 
+                grid-column: span 2; 
+                margin-top: 8px;
+                padding: 10px;
+            }
+
+            /* Stack Frames vertically */
+            .input-sections { flex-direction: column; gap: 8px; }
+            .input-frame { width: 100%; flex: 1 1 auto; }
+            
+            /* Input Group: STRICTLY Horizontal */
+            .input-group {
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 4px;
+            }
+            
+            .input-group label {
+                font-size: 0.85rem;
+                margin-bottom: 0;
+            }
+            
+            /* Ensure inputs don't explode in size */
+            .input-group input[type="text"],
+            .input-group input[type="number"],
+            .input-group select {
+                width: 80px !important;
+                flex: 0 0 80px !important;
+                height: 30px;
+                font-size: 14px; /* Prevent IOS Zoom */
+            }
+            
+            /* Radio/Checkbox Font Size */
+            .radio-group label, .checkbox-group label { font-size: 0.75rem; }
+
+            /* ACTIONS: 2x2 Grid for Mobile */
+            .actions-content {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            /* Results */
+            .results-container { flex-direction: column; gap: 8px; }
+            .main-results, .side-table { flex: 1 1 100%; width: 100%; }
+            
+            .results-header { flex-direction: row; padding: 8px; }
+            .results-header span:last-child { font-size: 0.75rem; }
+            
+            /* Table Compactness */
+            .results-table th, .results-table td { padding: 6px 4px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-900 text-white shadow-lg">
+        <div class="mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-7">
+                    <div>
+                        <a href="/" class="flex items-center py-2 px-2 shrink-0">
+                            <img src="/logo.png" alt="Premnath Engineering" class="h-10 w-auto mr-2" />
+                            <span class="font-bold text-lg hidden md:inline">Premnath Engineering</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="/" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Home</a>
+                        <a href="/calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Hydraulic</a>
+                        <a href="/qmax_calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Qmax</a>
+                        <a href="/load_distribution_calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Load Distribution</a>
+                        <a href="/tractive_effort_calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Tractive Effort</a>
+                        <a href="/vehicle_performance_calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Vehicle Performance</a>
+                        <a href="/braking_calculator" class="py-4 px-2 text-yellow-200 bg-blue-800 font-semibold">Braking</a>
+                    </div>
+                </div>
+                
+                <!-- Auth Section -->
+                <div id="auth-section" class="hidden md:flex items-center space-x-2">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button class="outline-none mobile-menu-button">
+                        <svg class="w-6 h-6 text-gray-300 hover:text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="hidden mobile-menu">
+            <ul class="bg-blue-800">
+                <li><a href="/" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">🏠 Home</a></li>
+                <li><a href="/calculator" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">⚙️ Hydraulic Calculator</a></li>
+                <li><a href="/qmax_calculator" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">🚰 Qmax Calculator</a></li>
+                <li><a href="/load_distribution_calculator" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">⚖️ Load Distribution</a></li>
+                <li><a href="/tractive_effort_calculator" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">🚂 Tractive Effort</a></li>
+                <li><a href="/vehicle_performance_calculator" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">📈 Vehicle Performance</a></li>
+                <li class="active"><a href="/braking_calculator" class="block text-sm px-4 py-3 text-white bg-blue-600 font-semibold">🛑 Braking Calculator</a></li>
+                <li id="mobile-auth-section" class="border-t border-blue-700 mt-2">
+                    <!-- Will be populated by JavaScript -->
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 15px;">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="title">Braking Performance Calculator</div>
+            <div class="author-inputs">
+                <label>Doc-No.:</label>
+                <input type="text" id="doc_no" value="BRK-001" placeholder="Enter doc number">
+                
+                <label>Made by:</label>
+                <input type="text" id="made_by" placeholder="Enter name">
+                
+                <label>Checked by:</label>
+                <input type="text" id="checked_by" placeholder="Enter name">
+                
+                <label>Approved by:</label>
+                <input type="text" id="approved_by" placeholder="Enter name">
+                
+                <button class="btn btn-purple" onclick="generateZipFolder()" style="background-color: #9333ea;">📄 PDF Report</button>
+            </div>
+        </div>
+
+        <!-- Input Sections -->
+        <div class="input-sections">
+            <!-- Vehicle Data -->
+            <div class="input-frame">
+                <div class="frame-title">1. Vehicle Data</div>
+                <div class="section-content">
+                    <button class="btn btn-orange" onclick="importVehicleData()" style="margin-bottom: 8px;">Import CSV</button>
+                    
+                    <div class="input-group">
+                        <label>GVW (kg):</label>
+                        <input type="number" id="mass_kg" value="11280">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Max Speed (km/h)(comma separated multiple values):</label>
+                        <input type="text" id="max_speed" value="50" placeholder="10,20">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Driving Wheels:</label>
+                        <input type="number" id="driving_wheels" value="4">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label style="color: #999;">Braked Wheels:</label>
+                        <input type="number" id="braked_wheels" value="4" disabled>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Wheel Dia (mm):</label>
+                        <input type="number" id="wheel_diameter" value="730">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Track Data -->
+            <div class="input-frame">
+                <div class="frame-title">2. Track Data</div>
+                <div class="section-content">
+                    <button class="btn btn-orange" onclick="importTrackData()" style="margin-bottom: 8px;">Import CSV</button>
+                    
+                    <div class="input-group">
+                        <label>Choose Track:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="track_standard" value="CUSTOM" checked> CUST</label>
+                            <label><input type="radio" name="track_standard" value="IR"> IR</label>
+                            <label><input type="radio" name="track_standard" value="HSR"> HSR</label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Max Gradient (comma separated multiple values):</label>
+                        <div class="radio-group" style="flex: 0 0 auto;">
+                            <label><input type="radio" name="gradient_type" value="Degree (°)">(°)</label>
+                            <label><input type="radio" name="gradient_type" value="1 in G" checked> 1:G</label>
+                            <label><input type="radio" name="gradient_type" value="Percentage (%)">%</label>
+                        </div>
+                        <input type="text" id="max_gradient" value="33" style="width: 50px !important; flex: 0 0 50px !important;">                      
+                    </div>
+                    
+                    <div class="input-group">
+                        <label style="color: #999;">Max Curve:</label>
+                        <input type="number" id="max_curve" value="200" disabled>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label style="color: #999;">Superelev (mm):</label>
+                        <input type="number" id="max_superelevation" value="100" disabled>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label style="color: #999;">Max Cant (mm):</label>
+                        <input type="number" id="max_cant" value="100" disabled>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label style="color: #999;">Gauge (mm):</label>
+                        <input type="number" id="track_gauge" value="1676" disabled>
+                    </div>
+
+                    <!-- Road Mode Parameters -->
+                    <div id="road_mode_params" style="display: none;">
+                        <hr style="margin: 8px 0; border: 1px solid #eee;">
+                        <div style="font-weight: bold; color: #007bff; margin-bottom: 6px; font-size: 0.85rem;">Road Mode:</div>
+                        
+                        <div class="input-group">
+                            <label>Road Speed (km/h)(comma separated multiple values):</label>
+                            <input type="text" id="road_speed_list" value="30">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Gradient(comma separated multiple values):</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="road_gradient_type" value="Percentage (%)" checked>%</label>
+                                <label><input type="radio" name="road_gradient_type" value="Degree (°)">(°)</label>
+                            </div>
+                            <input type="text" id="road_gradient" value="5" style="width: 50px !important; flex: 0 0 50px !important;">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Friction (μ):</label>
+                            <input type="number" id="road_friction" value="0.7" step="0.1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brake Configuration -->
+            <div class="input-frame">
+                <div class="frame-title">3. Brake Configuration</div>
+                <div class="section-content">
+                    <div class="input-group">
+                        <label>Brake type:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="brake_type" value="Disc Brake" checked> Disc</label>
+                            <label><input type="radio" name="brake_type" value="Tread Brake"> Tread</label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Calculate:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="calc_mode" value="force" checked onchange="updateCalcModeUI()"> Force</label>
+                            <label><input type="radio" name="calc_mode" value="distance" onchange="updateCalcModeUI()"> Dist</label>
+                            <label><input type="radio" name="calc_mode" value="details" onchange="updateCalcModeUI()"> Detail</label>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic calculation mode containers -->
+                    <div id="force-mode" class="calculation-mode-container active">
+                        <div class="input-group">
+                            <label>Total Stop Dist (m):</label>
+                            <input type="number" id="custom_distance" value="">
+                        </div>
+                        <div class="input-group">
+                            <label>Standard:</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="distance_source" value="Custom" onchange="toggleStandardDistanceTable()"> Custom</label>
+                                <label><input type="radio" name="distance_source" value="EN Standard" checked onchange="toggleStandardDistanceTable()"> EN Std</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="distance-mode" class="calculation-mode-container">
+                        <div class="input-group">
+                            <label style="color: #999;">Clamping force (N):</label>
+                            <input type="number" id="clamping_force" value="" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label style="color: #999;">Disc dia (mm):</label>
+                            <input type="number" id="disc_diameter" value="" disabled>
+                        </div>
+                    </div>
+
+                    <div id="details-mode" class="calculation-mode-container">
+                        <div class="input-group">
+                            <label>Coming Soon...</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Parameters -->
+            <div class="input-frame">
+                <div class="frame-title">4. Control PDF and Report</div>
+                <div class="section-content">
+                    <div class="input-group">
+                        <label>Mode:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="road_mode_enabled" onchange="toggleRoadModeParams()"> Road Mode</label>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Scenarios:</label>
+                        <div class="checkbox-group" style="flex-wrap: wrap; justify-content: flex-end;">
+                            <label><input type="checkbox" id="show_straight" checked> Straight</label>
+                            <label><input type="checkbox" id="show_moving_up" checked> Up</label>
+                            <label><input type="checkbox" id="show_moving_down" checked> Down</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Options:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="show_gbr"> Show GBR</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions (Full Width) -->
+            <div class="input-frame full-width-span">
+                <div class="frame-title">5. Actions</div>
+                <div class="section-content actions-content">
+                    <button class="btn btn-green" onclick="performCalculation()">Calculate</button>
+                    <button class="btn btn-blue" onclick="exportInputs()">Export Input</button>
+                    <button class="btn btn-blue" onclick="exportOutputs()">Export Output</button>
+                    <button class="btn btn-blue" onclick="exportFullReport()">Export Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div class="results-container">
+            <!-- Main Results Section -->
+            <div class="results-section main-results">
+                <div class="results-header">
+                    <span>Calculation Results</span>
+                    <span style="font-size: 11px; font-weight: normal; opacity: 0.8;">DIN EN 15746-2</span>
+                </div>
+                
+                <div class="results-table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Speed (km/h)</th>
+                                <th>v (m/s)</th>
+                                <th>Reaction (m)</th>
+                                <th>App. Force (kN)</th>
+                                <th>Grav. Force (kN)</th>
+                                <th>Net Force (kN)</th>
+                                <th>Decel (m/s²)</th>
+                                <th>Brake Dist (m)</th>
+                                <th>Total Dist (m)</th>
+                                <th>Compliance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results_body">
+                            <tr>
+                                <td colspan="10" style="text-align: center; padding: 40px; color: #666;">
+                                    Click Calculate
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Standard Stopping Distance Table Section -->
+            <div class="results-section standard-distance-section compact-table side-table" id="standard_distance_section">
+                <div class="results-header">
+                    <span>Standard Stopping Distance</span>
+                </div>
+                
+                <div class="results-table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;">Speed (km/h)</th>
+                                <th style="width: 50%;">Max Dist (m)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standard_stopping_table">
+                            <!-- Table will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Standard table data for UI display only (DIN EN 15746-2:2021-05)
+        const MAX_STOPPING_DISTANCES = {
+            8: 6, 10: 9, 16: 18, 20: 27, 24: 36,
+            30: 55, 32: 60, 40: 90, 50: 155, 60: 230,
+            70: 300, 80: 400, 90: 500, 100: 620
+        };
+
+        function populateStandardStoppingTable() {
+            const tbody = document.getElementById('standard_stopping_table');
+            tbody.innerHTML = '';
+            
+            // Sort speeds in ascending order
+            const sortedSpeeds = Object.keys(MAX_STOPPING_DISTANCES).map(Number).sort((a, b) => a - b);
+            
+            sortedSpeeds.forEach(speed => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${speed}</td>
+                    <td>${MAX_STOPPING_DISTANCES[speed]}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function toggleStandardDistanceTable() {
+            const distanceSourceRadio = document.querySelector('input[name="distance_source"]:checked');
+            const standardSection = document.getElementById('standard_distance_section');
+            
+            if (!standardSection) return;
+            
+            const distanceSource = distanceSourceRadio?.value;
+            
+            if (distanceSource === 'EN Standard') {
+                standardSection.classList.add('show');
+            } else {
+                standardSection.classList.remove('show');
+            }
+        }
+
+        function updateCalcModeUI() {
+            const modeRadio = document.querySelector('input[name="calc_mode"]:checked');
+            if (!modeRadio) return;
+            
+            const mode = modeRadio.value;
+            
+            // Hide all mode containers
+            document.querySelectorAll('.calculation-mode-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Show selected mode container
+            const activeContainer = document.getElementById(`${mode}-mode`);
+            if (activeContainer) {
+                activeContainer.classList.add('active');
+            }
+        }
+
+        function toggleRoadModeParams() {
+            const roadModeEnabled = document.getElementById('road_mode_enabled').checked;
+            const roadParams = document.getElementById('road_mode_params');
+            
+            if (roadModeEnabled) {
+                roadParams.style.display = 'block';
+            } else {
+                roadParams.style.display = 'none';
+            }
+        }
+
+        function collectInputData() {
+            const roadModeEnabled = document.getElementById('road_mode_enabled').checked;
+            
+            return {
+                // Document info
+                doc_no: document.getElementById('doc_no').value,
+                made_by: document.getElementById('made_by').value,
+                checked_by: document.getElementById('checked_by').value,
+                approved_by: document.getElementById('approved_by').value,
+                
+                // Basic parameters - match backend field names
+                mass_kg: parseFloat(document.getElementById('mass_kg').value) || 0,
+                reaction_time: 1.0, // Fixed value
+                num_wheels: parseInt(document.getElementById('driving_wheels').value) || 4,
+                wheel_dia: parseFloat(document.getElementById('wheel_diameter').value) || 0,
+                
+                // Calculation mode
+                calc_mode: roadModeEnabled ? "Rail+Road" : "Rail",
+                
+                // Rail mode parameters - match backend field names
+                rail_speed_input: document.getElementById('max_speed').value,
+                rail_gradient_input: document.getElementById('max_gradient').value,
+                rail_gradient_type: document.querySelector('input[name="gradient_type"]:checked')?.value || "1 in G",
+                
+                // Road mode parameters - match backend field names
+                road_speed_input: roadModeEnabled ? document.getElementById('road_speed_list').value : "",
+                road_gradient_input: roadModeEnabled ? document.getElementById('road_gradient').value : "",
+                road_gradient_type: roadModeEnabled ? document.querySelector('input[name="road_gradient_type"]:checked')?.value : "Percentage (%)",
+                mu: roadModeEnabled ? parseFloat(document.getElementById('road_friction').value) || 0.7 : 0.7,
+                
+                // Checkbox controls for PDF report
+                show_gbr: document.getElementById('show_gbr').checked,
+                show_straight: document.getElementById('show_straight').checked,
+                show_moving_up: document.getElementById('show_moving_up').checked,
+                show_moving_down: document.getElementById('show_moving_down').checked
+            };
+        }
+
+        function getStandardCompliance(speedKmh, calculatedDistance) {
+            if (calculatedDistance === Infinity) {
+                return "✗ Physical Limit Exceeded";
+            }
+
+            // Find relevant standard limit
+            let allowedDistance = null;
+            for (let speedLimit of Object.keys(MAX_STOPPING_DISTANCES).sort((a, b) => b - a)) {
+                if (speedKmh >= speedLimit) {
+                    allowedDistance = MAX_STOPPING_DISTANCES[speedLimit];
+                    break;
+                }
+            }
+
+            if (allowedDistance === null) {
+                return "Standard Not Found";
+            }
+
+            return calculatedDistance <= allowedDistance ? 
+                "✓ Standard Followed" : "✗ Standard Exceeded";
+        }
+
+        async function performCalculation() {
+            const inputs = collectInputData();
+            const resultsBody = document.getElementById('results_body');
+            
+            console.log('Collected inputs:', inputs); // Debug log
+            
+            if (inputs.mass_kg <= 0) {
+                alert('Please enter a valid mass (kg)');
+                return;
+            }
+
+            // Show loading state
+            resultsBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">Calculating... Please wait</td></tr>';
+
+            try {
+                // Call backend API
+                const response = await fetch('/braking_calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(inputs)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                // Clear loading state
+                resultsBody.innerHTML = '';
+                
+                // Display results from backend
+                if (data.rows && data.rows.length > 0) {
+                    // Group and sort data properly
+                    const groupedData = {};
+                    
+                    data.rows.forEach(row => {
+                        const mode = row.mode;
+                        const gradientKey = `${row.gradient_value || 0}_${row.gradient || "0"}`;
+                        const scenario = row.scenario;
+                        
+                        if (!groupedData[mode]) groupedData[mode] = {};
+                        if (!groupedData[mode][gradientKey]) groupedData[mode][gradientKey] = {};
+                        if (!groupedData[mode][gradientKey][scenario]) groupedData[mode][gradientKey][scenario] = [];
+                        
+                        groupedData[mode][gradientKey][scenario].push(row);
+                    });
+                    
+                    // Display grouped data in correct order
+                    Object.keys(groupedData).sort().forEach(mode => {
+                        // Mode header
+                        const modeHeader = document.createElement('tr');
+                        modeHeader.style.background = mode === 'Rail' ? '#007bff' : '#28a745';
+                        modeHeader.style.color = 'white';
+                        modeHeader.innerHTML = `<td colspan="10" style="font-weight: bold; padding: 10px;">${mode.toUpperCase()} MODE CALCULATIONS</td>`;
+                        resultsBody.appendChild(modeHeader);
+                        
+                        // Sort gradients (0 first, then ascending)
+                        const gradientKeys = Object.keys(groupedData[mode]).sort((a, b) => {
+                            const aVal = parseFloat(a.split('_')[0]);
+                            const bVal = parseFloat(b.split('_')[0]);
+                            return aVal - bVal;
+                        });
+                        
+                        gradientKeys.forEach(gradientKey => {
+                            const gradientValue = parseFloat(gradientKey.split('_')[0]);
+                            const gradientDisplay = gradientKey.split('_')[1];
+                            
+                            // Level ground scenarios (gradient = 0) - now both modes use "Straight Track"
+                            if (gradientValue === 0) {
+                                const scenarios = Object.keys(groupedData[mode][gradientKey]);
+                                scenarios.forEach(scenario => {
+                                    // Level scenario header
+                                    const scenarioHeader = document.createElement('tr');
+                                    scenarioHeader.className = 'gradient-header';
+                                    scenarioHeader.style.background = '#e9ecef';
+                                    scenarioHeader.style.fontWeight = 'bold';
+                                    scenarioHeader.innerHTML = `<td colspan="10" style="padding: 8px;">${scenario}</td>`;
+                                    resultsBody.appendChild(scenarioHeader);
+                                    
+                                    // Data rows for this scenario
+                                    groupedData[mode][gradientKey][scenario].sort((a, b) => a.speed - b.speed).forEach(row => {
+                                        resultsBody.appendChild(createDataRow(row));
+                                    });
+                                });
+                            } else {
+                                // Gradient header
+                                const gradientHeader = document.createElement('tr');
+                                gradientHeader.className = 'gradient-header';
+                                gradientHeader.style.background = '#e9ecef';
+                                gradientHeader.style.fontWeight = 'bold';
+                                gradientHeader.innerHTML = `<td colspan="10" style="padding: 8px;">Gradient: ${gradientDisplay}</td>`;
+                                resultsBody.appendChild(gradientHeader);
+                                
+                                // Scenario sub-headers
+                                const scenarios = Object.keys(groupedData[mode][gradientKey]);
+                                
+                                // Sort scenarios properly - now both modes use same names
+                                const sortedScenarios = scenarios.sort((a, b) => {
+                                    const order = {
+                                        'Moving up': 1,
+                                        'Moving down': 2,
+                                        'Straight Track': 3
+                                    };
+                                    return (order[a] || 999) - (order[b] || 999);
+                                });
+                                
+                                sortedScenarios.forEach(scenario => {
+                                    // Scenario sub-header
+                                    const scenarioHeader = document.createElement('tr');
+                                    scenarioHeader.className = 'direction-header';
+                                    scenarioHeader.style.background = '#f8f9fa';
+                                    scenarioHeader.style.fontStyle = 'italic';
+                                    scenarioHeader.innerHTML = `<td colspan="10" style="padding: 6px; padding-left: 20px;">${scenario}</td>`;
+                                    resultsBody.appendChild(scenarioHeader);
+                                    
+                                    // Data rows for this scenario
+                                    groupedData[mode][gradientKey][scenario].sort((a, b) => a.speed - b.speed).forEach(row => {
+                                        resultsBody.appendChild(createDataRow(row));
+                                    });
+                                });
+                            }
+                        });
+                    });
+                } else {
+                    resultsBody.innerHTML = '<tr><td colspan="10" style="text-align: center;">No results returned</td></tr>';
+                }
+                
+                function createDataRow(row) {
+                    const tr = document.createElement('tr');
+                    const speedMs = (row.speed * 1000 / 3600).toFixed(2);
+                    const reactionDist = (speedMs * 1.0).toFixed(2);
+                    
+                    // Use backend provided values
+                    const appliedForce = (row.applied_force / 1000).toFixed(2); // Convert N to kN
+                    const gravForce = (row.gravitational_force / 1000).toFixed(2); // Convert N to kN
+                    const netForce = (row.net_force / 1000).toFixed(2); // Convert N to kN
+                    
+                    tr.innerHTML = `
+                        <td>${row.speed}</td>
+                        <td>${speedMs}</td>
+                        <td>${reactionDist}</td>
+                        <td>${appliedForce}</td>
+                        <td>${gravForce}</td>
+                        <td>${netForce}</td>
+                        <td>${row.decel}</td>
+                        <td>${row.dist}</td>
+                        <td>${row.total}</td>
+                        <td style="color: ${row.status.includes('✓') ? 'green' : 'red'}">${row.status}</td>
+                    `;
+                    return tr;
+                }
+
+            } catch (error) {
+                console.error('Calculation error:', error);
+                resultsBody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        function exportInputs() {
+            const inputs = collectInputData();
+            
+            // Convert to CSV
+            const headers = Object.keys(inputs);
+            const values = Object.values(inputs);
+            
+            const csvContent = headers.join(',') + '\n' + values.join(',');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'braking_calculator_inputs.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function exportOutputs() {
+            const resultsBody = document.getElementById('results_body');
+            const rows = resultsBody.getElementsByTagName('tr');
+            
+            if (rows.length === 0 || rows[0].cells[0].textContent.includes('Enter parameters')) {
+                alert('Please calculate results first before exporting output.');
+                return;
+            }
+            
+            let csvContent = 'Speed (km/h),v (m/s),Reaction Dist (m),Applied Force (kN),Gravitational Force (kN),Net Force (kN),Deceleration (m/s²),Braking Dist (m),Total Stop Dist (m),Compliance\n';
+            
+            for (let row of rows) {
+                if (row.cells.length === 10 && !row.innerHTML.includes('colspan')) {
+                    const rowData = [];
+                    for (let cell of row.cells) {
+                        rowData.push(cell.textContent.replace(',', ';'));
+                    }
+                    csvContent += rowData.join(',') + '\n';
+                }
+            }
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'braking_calculator_outputs.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function exportFullReport() {
+            const inputs = collectInputData();
+            const resultsBody = document.getElementById('results_body');
+            const rows = resultsBody.getElementsByTagName('tr');
+            
+            if (rows.length === 0 || rows[0].cells[0].textContent.includes('Enter parameters')) {
+                alert('Please calculate results first before exporting full report.');
+                return;
+            }
+            
+            let csvContent = '';
+            
+            // Add input parameters section
+            csvContent += 'BRAKING PERFORMANCE CALCULATOR - FULL REPORT\n\n';
+            csvContent += 'INPUT PARAMETERS\n';
+            csvContent += 'Parameter,Value\n';
+            csvContent += `Document No,${inputs.doc_no}\n`;
+            csvContent += `Made By,${inputs.made_by}\n`;
+            csvContent += `Checked By,${inputs.checked_by}\n`;
+            csvContent += `Approved By,${inputs.approved_by}\n`;
+            csvContent += `GVW (kg),${inputs.mass_kg}\n`;
+            csvContent += `Max Speed (km/h),${inputs.max_speed}\n`;
+            csvContent += `Driving Wheels,${inputs.driving_wheels}\n`;
+            csvContent += `Braked Wheels,${inputs.braked_wheels}\n`;
+            csvContent += `Wheel Diameter (mm),${inputs.wheel_diameter}\n`;
+            csvContent += `Track Standard,${inputs.track_standard}\n`;
+            csvContent += `Max Gradient,${inputs.max_gradient}\n`;
+            csvContent += `Gradient Type,${inputs.gradient_type}\n`;
+            csvContent += `Brake Type,${inputs.brake_type}\n`;
+            
+            // Add results section
+            csvContent += '\n\nCALCULATION RESULTS\n';
+            csvContent += 'Speed (km/h),v (m/s),Reaction Dist (m),Applied Force (kN),Gravitational Force (kN),Net Force (kN),Deceleration (m/s²),Braking Dist (m),Total Stop Dist (m),Compliance\n';
+            
+            for (let row of rows) {
+                if (row.cells.length === 10 && !row.innerHTML.includes('colspan')) {
+                    const rowData = [];
+                    for (let cell of row.cells) {
+                        rowData.push(cell.textContent.replace(',', ';'));
+                    }
+                    csvContent += rowData.join(',') + '\n';
+                } else if (row.innerHTML.includes('colspan')) {
+                    csvContent += `\n${row.textContent}\n`;
+                }
+            }
+            
+            // Add standard stopping distances
+            csvContent += '\n\nSTANDARD STOPPING DISTANCES (DIN EN 15746-2)\n';
+            csvContent += 'Speed (km/h),Max Stopping Distance (m)\n';
+            const standardTable = document.getElementById('standard_stopping_table');
+            const standardRows = standardTable.getElementsByTagName('tr');
+            for (let row of standardRows) {
+                if (row.cells.length === 2) {
+                    csvContent += `${row.cells[0].textContent},${row.cells[1].textContent}\n`;
+                }
+            }
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'braking_calculator_full_report.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        async function generatePDFReport() {
+            const inputs = collectInputData();
+            
+            if (inputs.mass_kg <= 0) {
+                alert('Please enter a valid mass (kg) before generating PDF');
+                return;
+            }
+
+            try {
+                // Show loading
+                const button = document.querySelector('button[onclick="generatePDFReport()"]');
+                const originalText = button.textContent;
+                button.textContent = 'Generating PDF...';
+                button.disabled = true;
+
+                // Call backend API for PDF generation
+                const response = await fetch('/download_braking_report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(inputs)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                // Download the PDF
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Braking_Report_${inputs.doc_no || 'Report'}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Restore button
+                button.textContent = originalText;
+                button.disabled = false;
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert(`Error generating PDF: ${error.message}`);
+                
+                // Restore button
+                const button = document.querySelector('button[onclick="generatePDFReport()"]');
+                button.textContent = 'Generate PDF Report';
+                button.disabled = false;
+            }
+        }
+
+        async function generateZipFolder() {
+            try {
+                // Collect all form inputs (same as PDF)
+                const inputs = collectInputData();
+
+                // Show loading
+                const button = document.querySelector('button[onclick="generateZipFolder()"]');
+                const originalText = button.textContent;
+                button.textContent = '📄 Generating PDF...';
+                button.disabled = true;
+
+                // Call backend API for ZIP generation
+                const response = await fetch('/download_braking_folder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(inputs)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                // Download the PDF
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Braking_Report_${inputs.doc_no || 'Report'}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Restore button
+                button.textContent = originalText;
+                button.disabled = false;
+
+                alert('✅ PDF Downloaded Successfully!');
+
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('❌ Error downloading PDF:\n' + error.message);
+                
+                // Restore button
+                const button = document.querySelector('button[onclick="generateZipFolder()"]');
+                button.textContent = '📄 Download PDF Report';
+                button.disabled = false;
+            }
+        }
+
+        function importVehicleData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const lines = e.target.result.split('\n');
+                            const headers = lines[0].split(',');
+                            const data = lines[1].split(',');
+                            
+                            for (let i = 0; i < headers.length; i++) {
+                                const header = headers[i].trim();
+                                const value = data[i] ? data[i].trim() : '';
+                                
+                                const fieldMap = {
+                                    'mass_kg': 'mass_kg',
+                                    'max_speed': 'max_speed',
+                                    'driving_wheels': 'driving_wheels',
+                                    'braked_wheels': 'braked_wheels',
+                                    'wheel_diameter': 'wheel_diameter'
+                                };
+                                
+                                const fieldId = fieldMap[header];
+                                if (fieldId && value) {
+                                    const element = document.getElementById(fieldId);
+                                    if (element) {
+                                        element.value = value;
+                                    }
+                                }
+                            }
+                            alert('Vehicle data imported successfully!');
+                        } catch (error) {
+                            alert('Error importing vehicle data: ' + error.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function importTrackData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const lines = e.target.result.split('\n');
+                            const headers = lines[0].split(',');
+                            const data = lines[1].split(',');
+                            
+                            for (let i = 0; i < headers.length; i++) {
+                                const header = headers[i].trim();
+                                const value = data[i] ? data[i].trim() : '';
+                                
+                                const fieldMap = {
+                                    'max_gradient': 'max_gradient',
+                                    'max_curve': 'max_curve',
+                                    'friction': 'friction',
+                                    'max_superelevation': 'max_superelevation',
+                                    'max_cant': 'max_cant',
+                                    'track_gauge': 'track_gauge'
+                                };
+                                
+                                const fieldId = fieldMap[header];
+                                if (fieldId && value) {
+                                    const element = document.getElementById(fieldId);
+                                    if (element) {
+                                        element.value = value;
+                                    }
+                                }
+                            }
+                            alert('Track data imported successfully!');
+                        } catch (error) {
+                            alert('Error importing track data: ' + error.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize calculator UI
+            updateCalcModeUI();
+            toggleRoadModeParams();
+            populateStandardStoppingTable();
+            toggleStandardDistanceTable();
+            
+            // Initialize Authentication
+            initializeAuth();
+            
+            // Initialize Mobile Menu
+            initializeMobileMenu();
+        });
+
+        // --- AUTHENTICATION SYSTEM ---
+        function initializeAuth() {
+            const token = localStorage.getItem("token");
+            const isLicenseActive = localStorage.getItem("is_license_active") === "true";
+            const authSection = document.getElementById("auth-section");
+            const mobileAuthSection = document.getElementById("mobile-auth-section");
+
+            if (token) {
+                // User is logged in
+                const authHTML = `
+                    <span class="text-gray-300 mr-4 text-sm">Welcome, Engineer!</span>
+                    <button onclick="logout()" class="py-2 px-3 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700 transition">Logout</button>
+                    <a href="/profile" class="ml-2 py-2 px-3 text-xs font-medium text-blue-900 bg-yellow-400 rounded hover:bg-yellow-300 transition">
+                        ${isLicenseActive ? 'License ✅' : 'Activate 🔑'}
+                    </a>
+                `;
+                
+                const mobileAuthHTML = `
+                    <a href="/profile" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">
+                        👤 ${isLicenseActive ? 'License Active ✅' : 'Activate License 🔑'}
+                    </a>
+                    <a href="#" onclick="logout()" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300 text-red-300">🚪 Logout</a>
+                `;
+                
+                if (authSection) authSection.innerHTML = authHTML;
+                if (mobileAuthSection) mobileAuthSection.innerHTML = mobileAuthHTML;
+            } else {
+                // User is not logged in
+                const authHTML = `
+                    <a href="/login" class="py-2 px-3 font-medium text-gray-300 rounded hover:bg-blue-800 hover:text-white transition text-sm">Log In</a>
+                    <a href="/signup" class="py-2 px-3 font-medium text-white bg-green-600 rounded hover:bg-green-500 transition text-sm">Sign Up</a>
+                `;
+                
+                const mobileAuthHTML = `
+                    <a href="/login" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300">🔑 Log In</a>
+                    <a href="/signup" class="block text-sm px-4 py-3 hover:bg-blue-700 transition duration-300 text-green-300">📝 Sign Up</a>
+                `;
+                
+                if (authSection) authSection.innerHTML = authHTML;
+                if (mobileAuthSection) mobileAuthSection.innerHTML = mobileAuthHTML;
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "/login";
+        }
+
+        // --- MOBILE MENU SYSTEM ---
+        function initializeMobileMenu() {
+            const btn = document.querySelector("button.mobile-menu-button");
+            const menu = document.querySelector(".mobile-menu");
+            
+            if (btn && menu) {
+                btn.addEventListener("click", () => {
+                    menu.classList.toggle("hidden");
+                });
+            }
+        }
+
+        // --- ACCESS CONTROL (Optional) ---
+        function checkAccess() {
+            const token = localStorage.getItem("token");
+            const isLicenseActive = localStorage.getItem("is_license_active") === "true";
+
+            if (!token) {
+                alert("⚠️ Access Denied!\n\nPremnath Engineering Tools use karne ke liye Login karein.");
+                window.location.href = "/login";
+                return false;
+            }
+
+            if (!isLicenseActive) {
+                alert("🔒 License Required!\n\nBraking Calculator use karne ke liye License activate karein.");
+                window.location.href = "/profile";
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Premnath Engineering</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 flex items-center justify-center h-screen">
+  
+  <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-4 border-green-600">
+    <div class="text-center mb-8">
+        <img src="/logo.png" alt="Premnathrail Logo" class="h-12 mx-auto mb-2">
+    </div>
+    
+    <h2 class="text-xl font-semibold mb-6 text-center text-gray-700">Create Employee Account</h2>
+    
+    <form id="signupForm">
+      <div class="mb-4">
+        <label class="block text-gray-600 text-sm font-bold mb-2">Email Address</label>
+        <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition" placeholder="engineer@premnath.com" required>
+      </div>
+      <div class="mb-8">
+        <label class="block text-gray-600 text-sm font-bold mb-2">Password</label>
+        <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700 transition shadow-md">
+        Create Account
+      </button>
+    </form>
+    
+    <div class="mt-6 text-center text-sm text-gray-500">
+        <p>Already have an ID?</p>
+        <a href="/login" class="text-blue-600 font-bold hover:underline mt-1 inline-block">Log In here</a>
+    </div>
+    <div class="mt-4 text-center">
+        <a href="/" class="text-xs text-gray-400 hover:text-gray-600">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btn = e.target.querySelector('button');
+      
+      // Button ko disable karein taaki double click na ho
+      const originalText = btn.innerText;
+      btn.innerText = "Creating...";
+      btn.disabled = true;
+      btn.classList.add('opacity-75');
+
+      try {
+        // Backend API call
+        const res = await fetch('/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (res.ok) {
+            alert("✅ Account created successfully! Please Log In.");
+            window.location.href = "/login"; // Success hone par Login page par bhejo
+        } else {
+            const data = await res.json();
+            alert("❌ Error: " + (data.detail || "Registration failed"));
+            // Button reset karein agar error aaye
+            btn.innerText = originalText;
+            btn.disabled = false;
+            btn.classList.remove('opacity-75');
+        }
+      } catch (err) {
+          alert("Server Error. Please check your connection.");
+          btn.innerText = originalText;
+          btn.disabled = false;
+          btn.classList.remove('opacity-75');
+      }
+    });
+  </script>
+</body>
+</html>

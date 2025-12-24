@@ -1,0 +1,8 @@
+Parameter,Value
+gradient_input,1.25
+gradient_type,Percentage (%)
+max_curve,4
+max_curve_unit,degree
+max_superelevation,180
+max_cant,120
+track_gauge,1435

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>License Activation - Premnath Engineering</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 flex items-center justify-center h-screen text-white">
+  
+  <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-slate-700 text-center">
+    <div class="mb-6 bg-slate-900 w-16 h-16 mx-auto rounded-full flex items-center justify-center border-2 border-yellow-500">
+        <span class="text-3xl">🔒</span>
+    </div>
+
+    <h2 class="text-2xl font-bold mb-2 text-white">License Required</h2>
+    <p class="mb-8 text-slate-400 text-sm">Enter the valid company license key to unlock the Premnath Engineering Calculation Suite.</p>
+    
+    <div id="statusMessage" class="hidden mb-6 p-3 rounded text-sm font-semibold"></div>
+
+    <div class="mb-6 text-left">
+        <label class="block text-xs text-yellow-500 font-bold uppercase mb-1 tracking-wider">License Key</label>
+        <input type="text" id="licenseKey" placeholder="XXXX-XXXX-XXXX" class="w-full p-4 bg-slate-900 border border-slate-600 rounded text-white placeholder-slate-600 uppercase tracking-widest focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none transition">
+    </div>
+    
+    <button onclick="activate()" class="w-full bg-yellow-500 text-slate-900 font-bold py-3 rounded hover:bg-yellow-400 transition shadow-lg mb-4">
+      Validate & Activate
+    </button>
+    
+    <button onclick="logout()" class="text-slate-500 text-xs hover:text-white underline transition">
+        Log out / Switch Account
+    </button>
+  </div>
+
+  <script>
+    async function activate() {
+      const keyInput = document.getElementById('licenseKey');
+      const key = keyInput.value.trim();
+      const userId = localStorage.getItem("user_id");
+      const msgBox = document.getElementById("statusMessage");
+
+      // Validation
+      if (!key) {
+        msgBox.textContent = "Please enter a key.";
+        msgBox.className = "mb-6 p-3 rounded text-sm font-semibold bg-red-900 text-red-200 border border-red-700 block";
+        return;
+      }
+      
+      if (!userId) { 
+        alert("Session expired. Please login again.");
+        window.location.href = "/login"; 
+        return; 
+      }
+
+      // Call API
+      try {
+          const res = await fetch(`/activate_license?user_id=${userId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ license_key: key })
+          });
+
+          const data = await res.json();
+          msgBox.classList.remove("hidden");
+
+          if (res.ok) {
+            msgBox.textContent = "✅ Success! License Verified. Redirecting...";
+            msgBox.className = "mb-6 p-3 rounded text-sm font-semibold bg-green-900 text-green-200 border border-green-700 block";
+            
+            // Update Local Storage
+            localStorage.setItem("is_license_active", "true");
+            
+            // Redirect after short delay
+            setTimeout(() => { window.location.href = "/"; }, 1500);
+          } else {
+            msgBox.textContent = "❌ " + (data.detail || "Invalid License Key");
+            msgBox.className = "mb-6 p-3 rounded text-sm font-semibold bg-red-900 text-red-200 border border-red-700 block";
+          }
+      } catch (err) {
+          msgBox.textContent = "❌ Server Error. Check connection.";
+          msgBox.className = "mb-6 p-3 rounded text-sm font-semibold bg-red-900 text-red-200 border border-red-700 block";
+      }
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "/login";
+    }
+  </script>
+</body>
+</html>

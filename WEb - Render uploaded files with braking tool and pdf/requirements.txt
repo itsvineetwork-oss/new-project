@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+gunicorn
+matplotlib
+python-docx
+jinja2
+pandas
+numpy
+python-multipart
+sqlalchemy
+psycopg2-binary
+passlib
+bcrypt==3.2.0
+reportlab

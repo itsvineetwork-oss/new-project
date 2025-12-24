@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hydraulic Motor Calculation System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-gray-100">
+  <nav class="bg-blue-900 text-white shadow-lg">
+    <div class="mx-auto px-4">
+      <div class="flex justify-between">
+        <div class="flex space-x-7">
+          <div>
+            <a href="/" class="flex items-center py-2 px-2 shrink-0">
+              <img src="/logo.png" alt="Logo" class="h-12 w-auto mr-2" />
+            </a>
+          </div>
+          <div class="hidden md:flex items-center space-x-1">
+            <a href="/" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Home</a>
+            <a href="/calculator" class="py-4 px-2 text-white bg-blue-800 font-semibold">Hydraulic</a>
+            <a href="/qmax" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Qmax</a>
+            <a href="/load_distribution" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Load Distribution</a>
+            <a href="/tractive_effort" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Tractive Effort</a>
+            <a href="/vehicle_performance" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Vehicle Performance</a>
+            <a href="/braking" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Braking</a>
+          </div>
+        </div>
+        
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center">
+          <button class="outline-none mobile-menu-button">
+            <svg class="w-6 h-6 text-gray-300 hover:text-white" x-show="!showMenu" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Mobile menu -->
+    <div class="hidden mobile-menu">
+      <ul class="">
+        <li><a href="/" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Home</a></li>
+        <li class="active"><a href="/calculator" class="block text-sm px-2 py-4 text-white bg-blue-800 font-semibold">Hydraulic</a></li>
+        <li><a href="/qmax" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Qmax</a></li>
+        <li><a href="/load_distribution" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Load Distribution</a></li>
+        <li><a href="/tractive_effort" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Tractive Effort</a></li>
+        <li><a href="/vehicle_performance" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Vehicle Performance</a></li>
+        <li><a href="/braking" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Braking</a></li>
+      </ul>
+    </div>
+    <script>
+      // Grab HTML Elements
+      const btn = document.querySelector("button.mobile-menu-button");
+      const menu = document.querySelector(".mobile-menu");
+ 
+      // Add Event Listeners
+      btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+    </script>
+  </nav>
+  
+  <!-- License Modal -->
+  <div id="license-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-50 hidden">
+    <div id="license-popup" class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full transform transition-all">
+      <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">Enter License Key</h2>
+      <p class="text-gray-600 mb-6 text-center">Please enter your license key to activate the software.</p>
+      <input type="text" id="license-key-input" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="XXXX-XXXX-XXXX">
+      <button id="license-submit-btn" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+        ACTIVATE
+      </button>
+      <p id="license-error" class="text-red-500 text-sm mt-2 text-center hidden">Invalid license key. Please try again.</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="main-content" class="mx-auto max-w-7xl mt-4 p-4 bg-white rounded-xl shadow-lg">
+    <header class="bg-blue-900 text-white py-3 px-4 rounded-t-xl flex items-center gap-3"><span class="text-2xl">⚙️</span><h1 class="text-xl font-bold">HYDRAULIC MOTOR CALCULATION SYSTEM</h1></header>
+
+    <div class="bg-blue-50 border border-blue-300 mt-3 p-3 rounded-xl flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <h2 class="font-semibold text-blue-900">Select Calculation Mode:</h2>
+        <div class="flex flex-wrap gap-x-4 gap-y-2 mt-1">
+          <label class="mr-4"><input type="radio" name="mode" value="calc_cc" checked> Calculate Pump & Motor (cc)</label>
+          <label><input type="radio" name="mode" value="calc_speed"> Calculate Speed</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+
+        <!-- Column 1: Vehicle & Track Data -->
+        <div class="flex flex-col gap-4">
+            <section class="border-2 border-green-500 rounded-xl p-3">
+              <h2 class="bg-green-600 text-white text-center rounded-md py-1 mb-2 font-semibold">🚛 VEHICLE DATA</h2>
+              <div class="grid grid-cols-2 gap-2">
+                <label>Vehicle Weight (t)<input class="input" id="weight" value="18.500" /></label>
+                <label>Number of Axles<input class="input" id="axles" value="2" /></label>
+                <label id="target_speed_label">Target Speed (km/h)<input class="input" id="speed" value="35" /></label>
+                <label>Max Vehicle RPM<input class="input" id="vehicle_rpm" value="2700" /></label>
+                <label>PTO Gear Box Ratio<input class="input" id="pto_ratio" value="1" /></label>
+                <label>Engine Gear Box Ratio<input class="input" id="engine_ratio" value="3.5" placeholder="e.g. 3.5, 4.0" /></label>
+                <label>Axle Gear Box Ratio<input class="input" id="axle_ratio" value="5.1" /></label>
+              </div>
+            </section>
+            <section class="border-2 border-blue-600 rounded-xl p-3">
+              <h2 class="bg-blue-600 text-white text-center rounded-md py-1 mb-2 font-semibold">🛤 TRACK & RRV DATA</h2>
+              <div class="grid grid-cols-3 gap-2">
+                <label>Slope (%)<input class="input" id="slope" value="0.0" /></label>
+                <label>Curve (deg)<input class="input" id="curve" value="0.0" /></label>
+                <label>Wheel Dia (mm)<input class="input" id="wheel_dia" value="560" /></label>
+              </div>
+            </section>
+        </div>
+
+        <!-- Column 2: Motor & Pump Data -->
+        <div class="flex flex-col gap-4">
+            <section class="border-2 border-orange-400 rounded-xl p-3">
+              <h2 class="bg-orange-500 text-white text-center rounded-md py-1 mb-2 font-semibold">⚙️ HYDRAULIC MOTOR</h2>
+              <div class="grid grid-cols-2 gap-2">
+                <label>Hydraulic Motor (Total)<input class="input" id="num_motors" value="2" /></label>
+                <label>Motor / Axle<input class="input" id="per_axle_motor" value="1" /></label>
+                <label id="pressure_label">Pressure (bar)<input class="input" id="pressure" value="150" /></label>
+                <label id="mech_eff_label">Mech Eff (%)<input class="input" id="mech_eff" value="95" /></label>
+                <label>Motor Vol Eff (%)<input class="input" id="vol_eff_motor" value="95" /></label>
+                <label id="motor_displacement_label">Motor Displacement (cc)<input class="input" id="motor_displacement" value="28" /></label>
+                <label id="max_motor_rpm_label">max Motor RPM<input class="input" id="max_motor_rpm" value="3000" /></label>
+              </div>
+            </section>
+            <section class="border-2 border-purple-600 rounded-xl p-3">
+              <h2 class="bg-purple-700 text-white text-center rounded-md py-1 mb-2 font-semibold">🔩 PUMP</h2>
+              <div class="grid grid-cols-2 gap-2">
+                <label>Pump Vol Eff (%)<input class="input" id="vol_eff_pump" value="95" /></label>
+                <label id="pump_displacement_label">Pump Displacement (cc)<input class="input" id="pump_displacement" value="65" /></label>
+                <label id="max_pump_rpm_label">max Pump RPM<input class="input" id="max_pump_rpm" value="3000" /></label>
+              </div>
+            </section>
+        </div>
+        
+        <!-- Column 3: Actions & Results -->
+        <div class="md:col-span-1 flex flex-col gap-4">
+            <div class="space-y-3 text-center p-4 border-2 border-gray-300 rounded-xl bg-gray-50">
+                <button id="calculateBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  📊 CALCULATE
+                </button>
+                <button id="saveDocBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  💾 SAVE DOCUMENT
+                </button>
+            </div>
+            
+            <section class="border-2 border-blue-900 mt-4 p-3 rounded-xl min-h-[400px] flex-grow">
+              <h2 class="text-blue-900 font-semibold text-lg">🧾 Results:</h2>
+              <pre id="resultsBox" class="bg-gray-50 p-3 rounded overflow-auto h-[500px] text-sm font-mono whitespace-pre-wrap">
+        ⌛ Results will appear here after calculation...
+              </pre>
+            </section>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    // A global variable to store the last input data
+    let lastInputData = null;
+    
+    // Define the API base URL.
+    // This makes it easy to switch between local and production.
+    const API_BASE_URL = ''; 
+
+
+    // --- Function to collect input data ---
+    function collectRawData() {
+        return {
+            calc_mode: document.querySelector('input[name="mode"]:checked').value,
+            weight: document.getElementById('weight').value,
+            axles: document.getElementById('axles').value,
+            speed: document.getElementById('speed').value,
+            max_vehicle_rpm: document.getElementById('vehicle_rpm').value,
+            pto_gear_ratio: document.getElementById('pto_ratio').value,
+            engine_gear_ratio: document.getElementById('engine_ratio').value,
+            axle_gear_box_ratio: document.getElementById('axle_ratio').value,
+            slope_percent: document.getElementById('slope').value,
+            curve_degree: document.getElementById('curve').value,
+            wheel_diameter: document.getElementById('wheel_dia').value,
+            num_motors: document.getElementById('num_motors').value,
+            per_axle_motor: document.getElementById('per_axle_motor').value,
+            pressure: document.getElementById('pressure').value,
+            mech_eff_motor: document.getElementById('mech_eff').value,
+            vol_eff_motor: document.getElementById('vol_eff_motor').value,
+            motor_disp_in: document.getElementById('motor_displacement').value,
+            max_motor_rpm: document.getElementById('max_motor_rpm').value,
+            vol_eff_pump: document.getElementById('vol_eff_pump').value,
+            pump_disp_in: document.getElementById('pump_displacement').value,
+            max_pump_rpm: document.getElementById('max_pump_rpm').value
+        };
+    }
+    
+    // --- API Call Function ---
+    async function handleCalculateClick() {
+      const resultsBox = document.getElementById("resultsBox");
+      resultsBox.textContent = "Calculating... (Connecting to API)";
+
+      const rawData = collectRawData();
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/calculate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rawData),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          // data.detail is the error message from FastAPI
+          throw new Error(data.detail || "Unknown error");
+        }
+
+        resultsBox.textContent = data.report;
+        // On success, save the input data
+        lastInputData = rawData; 
+
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        resultsBox.textContent = `--- ERROR ---\n${error.message}\n\nIs the FastAPI server running?`;
+        // On failure, set it to null
+        lastInputData = null;
+      }
+    }
+
+    // --- .docx download function ---
+    async function handleSaveDocumentClick() {
+        const resultsBox = document.getElementById("resultsBox");
+        
+        // 1. Check if we have previous data to save
+        if (!lastInputData) {
+            resultsBox.textContent = "--- ERROR ---\nFirst, generate a successful report by clicking the 'CALCULATE' button.";
+            return;
+        }
+
+        resultsBox.textContent = "Generating .docx file... (Requesting from server)";
+
+        try {
+            // 2. Call the /download_report endpoint
+            const response = await fetch(`${API_BASE_URL}/download_report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(lastInputData), // Send the last successful input
+            });
+
+            if (!response.ok) {
+                // If the server sent a JSON error, show it
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to download file");
+            }
+
+            // 3. Get the response as a 'blob' (binary data)
+            const blob = await response.blob();
+            
+            // 4. Try to get the filename from the header
+            const contentDisposition = response.headers.get('content-disposition');
+            let filename = "Report.docx";
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (filenameMatch && filenameMatch.length > 1) {
+                    filename = filenameMatch[1];
+                }
+            }
+
+            // 5. Create an invisible link to trigger the download
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url); // Clear memory
+            a.remove();
+
+            resultsBox.textContent = "Document download started.\n\n" + resultsBox.textContent;
+
+        } catch (error) {
+            console.error("Download Error:", error);
+            resultsBox.textContent = `--- DOCUMENT DOWNLOAD ERROR ---\n${error.message}`;
+        }
+    }
+
+    // --- Function to toggle input fields ---
+    function toggleInputs() {
+      const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+      const mode1_ids = ['target_speed_label', 'pressure_label', 'mech_eff_label'];
+      const mode2_ids = ['motor_displacement_label', 'max_motor_rpm_label', 'pump_displacement_label', 'max_pump_rpm_label'];
+      
+      const motorDispInput = document.getElementById('motor_displacement');
+      const pumpDispInput = document.getElementById('pump_displacement');
+      const maxMotorRpmInput = document.getElementById('max_motor_rpm');
+      const maxPumpRpmInput = document.getElementById('max_pump_rpm');
+
+      const speedInput = document.getElementById('speed');
+      const pressureInput = document.getElementById('pressure');
+      const mechEffInput = document.getElementById('mech_eff');
+
+
+      if (selectedMode === 'calc_cc') {
+        // Show Mode 1 inputs, hide Mode 2 inputs
+        mode1_ids.forEach(id => document.getElementById(id).style.display = 'block');
+        mode2_ids.forEach(id => document.getElementById(id).style.display = 'none');
+        // Also disable the input fields
+        [motorDispInput, pumpDispInput, maxMotorRpmInput, maxPumpRpmInput].forEach(el => el.disabled = true);
+        [speedInput, pressureInput, mechEffInput].forEach(el => el.disabled = false);
+
+      } else { // calc_speed
+        // Hide Mode 1 inputs, show Mode 2 inputs
+        mode1_ids.forEach(id => document.getElementById(id).style.display = 'none');
+        mode2_ids.forEach(id => document.getElementById(id).style.display = 'block');
+        // Disable Mode 1 inputs, enable Mode 2 inputs
+        [motorDispInput, pumpDispInput, maxMotorRpmInput, maxPumpRpmInput].forEach(el => el.disabled = false);
+        [speedInput, pressureInput, mechEffInput].forEach(el => el.disabled = true);
+      }
+    }
+
+    // --- Add event listeners ---
+    document.getElementById("calculateBtn").addEventListener("click", handleCalculateClick);
+    document.getElementById("saveDocBtn").addEventListener("click", handleSaveDocumentClick);
+    document.querySelectorAll('input[name="mode"]').forEach(radio => radio.addEventListener('change', toggleInputs));
+
+    // --- License Pop-up Logic ---
+    const licenseOverlay = document.getElementById('license-overlay');
+    const licenseSubmitBtn = document.getElementById('license-submit-btn');
+    const licenseInput = document.getElementById('license-key-input');
+    const licenseError = document.getElementById('license-error');
+
+    licenseSubmitBtn.addEventListener('click', () => {
+      // Check if the entered key is correct
+      if (licenseInput.value.trim() === '8520-8520-8520') {
+        // Hide the pop-up with a fade-out effect
+        licenseOverlay.classList.add('opacity-0', 'pointer-events-none');
+        // After the transition, set display to none
+        setTimeout(() => {
+          licenseOverlay.style.display = 'none';
+        }, 500); // Match transition duration
+      } else {
+        // Show an error message
+        licenseError.classList.remove('hidden');
+      }
+    });
+
+    // --- Initial setup ---
+    toggleInputs(); // Set the correct inputs on page load
+    // handleCalculateClick(); // Perform initial calculation on page load
+  </script>
+
+  <style>
+    .input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; width: 100%; margin-top: 4px; }
+    .input:disabled { background-color: #f3f4f6; color: #9ca3af; }
+    label { font-size: 0.875rem; font-weight: 500; color: #374151; display: block; }
+  </style>
+  <style>
+    /* Transition for the license overlay fade-out */
+    #license-overlay {
+      transition: opacity 0.5s ease-in-out;
+    }
+  </style>
+</body>
+</html>

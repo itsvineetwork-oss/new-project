@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Qmax Calculation System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-gray-100">
+  <nav class="bg-blue-900 text-white shadow-lg">
+    <div class="mx-auto px-4">
+      <div class="flex justify-between">
+        <div class="flex space-x-7">
+          <div>
+            <a href="/" class="flex items-center py-2 px-2 shrink-0">
+              <img src="/logo.png" alt="Logo" class="h-12 w-auto mr-2" />
+            </a>
+          </div>
+          <div class="hidden md:flex items-center space-x-1">
+            <a href="/" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Home</a>
+            <a href="/calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Hydraulic</a>
+            <a href="/qmax" class="py-4 px-2 text-white bg-blue-800 font-semibold">Qmax</a>
+            <a href="/load_distribution" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Load Distribution</a>
+            <a href="/tractive_effort" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Tractive Effort</a>
+            <a href="/vehicle_performance" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Vehicle Performance</a>
+            <a href="/braking" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Braking</a>
+          </div>
+        </div>
+        
+        <div class="md:hidden flex items-center">
+          <button class="outline-none mobile-menu-button">
+            <svg class="w-6 h-6 text-gray-300 hover:text-white" x-show="!showMenu" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="hidden mobile-menu">
+      <ul class="">
+        <li><a href="/" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Home</a></li>
+        <li><a href="/calculator" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Hydraulic</a></li>
+        <li class="active"><a href="/qmax" class="block text-sm px-2 py-4 text-white bg-blue-800 font-semibold">Qmax</a></li>
+        <li><a href="/load_distribution" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Load Distribution</a></li>
+        <li><a href="/tractive_effort" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Tractive Effort</a></li>
+        <li><a href="/vehicle_performance" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Vehicle Performance</a></li>
+        <li><a href="/braking" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Braking</a></li>
+      </ul>
+    </div>
+    <script>
+      const btn = document.querySelector("button.mobile-menu-button");
+      const menu = document.querySelector(".mobile-menu");
+      btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+    </script>
+  </nav>
+  
+  <div id="main-content" class="mx-auto max-w-screen-xl mt-4 p-4 bg-white rounded-xl shadow-lg">
+    <header class="bg-blue-900 text-white py-3 px-4 rounded-t-xl flex items-center gap-3"><span class="text-2xl">🚄</span><h1 class="text-xl font-bold">QMAX CALCULATION SYSTEM</h1></header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+
+        <div class="flex flex-col gap-4">
+            <section class="border-2 border-purple-600 rounded-xl p-3">
+              <h2 class="bg-purple-700 text-white text-center rounded-md py-1 mb-2 font-semibold">INPUT PARAMETERS</h2>
+              <div class="grid grid-cols-1 gap-3">
+                <label>Worn rail diameter limit (d) (mm)
+                    <input class="input" id="d" value="134.5" type="number" step="0.1" />
+                </label>
+                <label>Material Strength (σB)
+                    <select id="sigma_b_selection" class="input">
+                        <option value="880 N/mm²">880 N/mm²</option>
+                        <option value="680 N/mm²">680 N/mm²</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                </label>
+                <label id="sigma_b_custom_label" style="display: none;">Custom σB (N/mm²)
+                    <input class="input" id="sigma_b_custom" type="number" placeholder="Enter custom value" />
+                </label>
+                <label>Safety Factor (v_head)
+                    <input class="input" id="v_head" value="1.1" type="number" step="0.1" />
+                </label>
+              </div>
+            </section>
+        </div>
+        
+        <div class="flex flex-col gap-4">
+            <div class="space-y-3 text-center p-4 border-2 border-gray-300 rounded-xl bg-gray-50 md:sticky md:top-4">
+                <button id="calculateBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  📊 CALCULATE QMAX
+                </button>
+                <button id="saveDocBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  💾 SAVE DOCUMENT
+                </button>
+            </div>
+
+            <section class="border-2 border-blue-900 p-3 rounded-xl flex-grow flex flex-col">
+              <h2 class="text-blue-900 font-semibold text-lg">🧾 Results:</h2>
+              <pre id="resultsBox" class="bg-gray-50 p-3 rounded overflow-auto text-sm font-mono whitespace-pre-wrap flex-grow h-full min-h-[300px]">
+        ⌛ Results will appear here after calculation...
+              </pre>
+            </section>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    let lastInputData = null;
+    
+    // API URL Blank for automatic detection (Render friendly)
+    const API_BASE_URL = ''; 
+
+    // --- Function to collect input data ---
+    function collectRawData() {
+        return {
+            d: document.getElementById('d').value,
+            sigma_b_selection: document.getElementById('sigma_b_selection').value,
+            sigma_b_custom: document.getElementById('sigma_b_custom').value,
+            v_head: document.getElementById('v_head').value
+        };
+    }
+
+    // --- Toggle Custom SigmaB Input ---
+    function toggleCustomSigmaB() {
+        const selection = document.getElementById('sigma_b_selection').value;
+        const customLabel = document.getElementById('sigma_b_custom_label');
+        if (selection === 'Custom') {
+            customLabel.style.display = 'block';
+        } else {
+            customLabel.style.display = 'none';
+        }
+    }
+    
+    // --- API Call Function ---
+    async function handleCalculateClick() {
+      const resultsBox = document.getElementById("resultsBox");
+      const calculateBtn = document.getElementById("calculateBtn");
+      
+      resultsBox.textContent = "Calculating... (Connecting to API)";
+      calculateBtn.disabled = true;
+      
+      const rawData = collectRawData();
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/calculate_qmax`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rawData),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || "Unknown error");
+        }
+        resultsBox.textContent = data.report;
+        lastInputData = rawData; 
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        resultsBox.textContent = `--- ERROR ---\n${error.message}\n\nIs the FastAPI server running?`;
+        lastInputData = null;
+      } finally {
+          calculateBtn.disabled = false;
+      }
+    }
+
+    // --- .docx download function ---
+    async function handleSaveDocumentClick() {
+        const resultsBox = document.getElementById("resultsBox");
+        const saveDocBtn = document.getElementById("saveDocBtn");
+        
+        if (!lastInputData) {
+            resultsBox.textContent = "--- ERROR ---\nFirst, generate a successful report by clicking 'CALCULATE' button.";
+            return;
+        }
+        
+        saveDocBtn.textContent = "Generating...";
+        saveDocBtn.disabled = true;
+        
+        // Don't clear resultsBox to show download status, prepend instead if needed
+        // or just use alert/console. Here we just keep the results visible.
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/download_qmax_report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(lastInputData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to download file");
+            }
+
+            const blob = await response.blob();
+            const contentDisposition = response.headers.get('content-disposition');
+            let filename = "Qmax_Report.docx"; // Default
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (filenameMatch && filenameMatch.length > 1) {
+                    filename = filenameMatch[1];
+                }
+            }
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            
+        } catch (error) {
+            console.error("Download Error:", error);
+            resultsBox.textContent = `--- DOCUMENT DOWNLOAD ERROR ---\n${error.message}`;
+        } finally {
+            saveDocBtn.textContent = "💾 SAVE DOCUMENT";
+            saveDocBtn.disabled = false;
+        }
+    }
+
+    // --- Add event listeners ---
+    document.getElementById("calculateBtn").addEventListener("click", handleCalculateClick);
+    document.getElementById("saveDocBtn").addEventListener("click", handleSaveDocumentClick);
+    document.getElementById('sigma_b_selection').addEventListener('change', toggleCustomSigmaB);
+
+    // --- Initial setup ---
+    toggleCustomSigmaB(); // Set correct state on page load
+  </script>
+
+  <style>
+    .input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; width: 100%; margin-top: 4px; }
+    .input:disabled { background-color: #f3f4f6; color: #9ca3af; }
+    label { font-size: 0.875rem; font-weight: 500; color: #374151; display: block; }
+  </style>
+</body>
+</html>

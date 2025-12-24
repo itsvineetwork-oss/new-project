@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tractive Effort Calculation System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-gray-100">
+  <nav class="bg-blue-900 text-white shadow-lg">
+    <div class="mx-auto px-4">
+      <div class="flex justify-between">
+        <div class="flex space-x-7">
+          <div>
+            <a href="/" class="flex items-center py-2 px-2 shrink-0">
+              <img src="/logo.png" alt="Logo" class="h-12 w-auto mr-2" />
+            </a>
+          </div>
+          <div class="hidden md:flex items-center space-x-1">
+            <a href="/" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Home</a>
+            <a href="/calculator" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Hydraulic</a>
+            <a href="/qmax" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Qmax</a>
+            <a href="/load_distribution" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Load Distribution</a>
+            <a href="/tractive_effort" class="py-4 px-2 text-white bg-blue-800 font-semibold">Tractive Effort</a>
+            <a href="/vehicle_performance" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Vehicle Performance</a>
+            <a href="/braking" class="py-4 px-2 text-gray-300 font-semibold hover:text-white transition duration-300">Braking</a>
+          </div>
+        </div>
+        
+        <div class="md:hidden flex items-center">
+          <button class="outline-none mobile-menu-button">
+            <svg class="w-6 h-6 text-gray-300 hover:text-white" x-show="!showMenu" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="hidden mobile-menu">
+      <ul class="">
+        <li><a href="/" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Home</a></li>
+        <li><a href="/calculator" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Hydraulic</a></li>
+        <li><a href="/qmax" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Qmax</a></li>
+        <li><a href="/load_distribution" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Load Distribution</a></li>
+        <li class="active"><a href="/tractive_effort" class="block text-sm px-2 py-4 text-white bg-blue-800 font-semibold">Tractive Effort</a></li>
+        <li><a href="/vehicle_performance" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Vehicle Performance</a></li>
+        <li><a href="/braking" class="block text-sm px-2 py-4 hover:bg-blue-800 transition duration-300">Braking</a></li>
+      </ul>
+    </div>
+    <script>
+      const btn = document.querySelector("button.mobile-menu-button");
+      const menu = document.querySelector(".mobile-menu");
+      btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+    </script>
+  </nav>
+  
+  <div id="main-content" class="mx-auto max-w-screen-xl mt-4 p-4 bg-white rounded-xl shadow-lg">
+    <header class="bg-blue-900 text-white py-3 px-4 rounded-t-xl flex items-center gap-3"><span class="text-2xl">🚂</span><h1 class="text-xl font-bold">TRACTIVE EFFORT (TE) CALCULATOR</h1></header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+
+        <div class="flex flex-col gap-4">
+            <section class="border-2 border-green-500 rounded-xl p-3">
+              <h2 class="bg-green-600 text-white text-center rounded-md py-1 mb-2 font-semibold">1. INPUTS</h2>
+              <div class="grid grid-cols-1 gap-3">
+                <label>Shunting Load (tons):
+                    <input class="input" id="load" value="2400" type="number" />
+                </label>
+                <label>GBW of Vehicle (tons):
+                    <input class="input" id="loco_weight" value="110" type="number" />
+                </label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label>Gradient:
+                        <input class="input" id="gradient" value="80" type="number" />
+                    </label>
+                    <label>Unit:
+                        <select id="grad_type" class="input">
+                            <option value="1 in G">1 in G</option>
+                            <option value="Degree">Degree</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <label>Curvature:
+                        <input class="input" id="curvature" value="10" type="number" />
+                    </label>
+                    <label>Unit:
+                        <select id="curvature_unit" class="input">
+                            <option value="Degree">Degree</option>
+                            <option value="Radius(m)">Radius(m)</option>
+                        </select>
+                    </label>
+                </div>
+                <label>Speed (km/h):
+                    <input class="input" id="speed" value="30" type="number" />
+                </label>
+                <label>Mode:
+                    <select id="mode" class="input">
+                        <option value="Running">Running</option>
+                        <option value="Start">Start</option>
+                    </select>
+                </label>
+              </div>
+            </section>
+        </div>
+        
+        <div class="flex flex-col gap-4">
+            <div class="space-y-3 text-center p-4 border-2 border-gray-300 rounded-xl bg-gray-50 md:sticky md:top-4">
+                <button id="calculateBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  📊 CALCULATE
+                </button>
+                <button id="saveDocBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                  💾 SAVE DOCUMENT
+                </button>
+            </div>
+        
+            <section class="border-2 border-blue-900 p-3 rounded-xl">
+              <h2 class="text-blue-900 font-semibold text-lg mb-2">📊 2. RESULTS SUMMARY</h2>
+              
+              <div class="grid grid-cols-1 gap-y-3">
+                <div class="p-3 bg-blue-50 rounded flex justify-between items-center">
+                    <span class="font-bold text-blue-800 text-lg">Tractive Effort (TE):</span>
+                    <span id="res_te" class="text-xl font-bold">-</span>
+                </div>
+                <div class="p-3 bg-blue-50 rounded flex justify-between items-center">
+                    <span class="font-bold text-blue-800 text-lg">Rail Horsepower (HP):</span>
+                    <span id="res_power" class="text-xl font-bold">-</span>
+                </div>
+                <div class="p-3 bg-blue-50 rounded flex justify-between items-center">
+                    <span class="font-bold text-blue-800 text-lg">OHE Current (Amps):</span>
+                    <span id="res_ohe" class="text-xl font-bold">-</span>
+                </div>
+              </div>
+              
+              <hr class="my-4">
+              
+              <h3 class="text-gray-700 font-semibold text-base mb-2">RESISTANCE COMPONENTS:</h3>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm md:text-base">
+                <span class="font-bold text-right">Wagon (T1):</span>
+                <span id="res_t1">-</span>
+                <span class="font-bold text-right">Loco (T2):</span>
+                <span id="res_t2">-</span>
+                <span class="font-bold text-right">Gradient (T3):</span>
+                <span id="res_t3">-</span>
+                <span class="font-bold text-right">Curvature (T4):</span>
+                <span id="res_t4">-</span>
+              </div>
+            </section>
+
+            <section class="border-2 border-purple-600 p-3 rounded-xl flex-grow flex flex-col">
+              <h2 class="text-purple-700 font-semibold text-lg mb-2">🧮 DETAILED REPORT</h2>
+              <pre id="resultsBox" class="bg-gray-50 p-3 rounded overflow-auto h-full flex-grow text-sm font-mono whitespace-pre-wrap min-h-[200px]">
+        ⌛ Detailed report will appear here after calculation...
+              </pre>
+            </section>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    let lastInputData = null;
+    
+    // API URL Blank for automatic detection (Render friendly)
+    const API_URL = ''; 
+
+    // --- DOM Elements ---
+    const resultsBox = document.getElementById('resultsBox');
+    
+    // Result value spans
+    const res = {
+        te: document.getElementById('res_te'),
+        power: document.getElementById('res_power'),
+        ohe: document.getElementById('res_ohe'),
+        t1: document.getElementById('res_t1'),
+        t2: document.getElementById('res_t2'),
+        t3: document.getElementById('res_t3'),
+        t4: document.getElementById('res_t4'),
+    };
+
+    // --- Function to collect input data ---
+    function collectRawData() {
+        return {
+            load: document.getElementById('load').value,
+            loco_weight: document.getElementById('loco_weight').value,
+            gradient: document.getElementById('gradient').value,
+            curvature: document.getElementById('curvature').value,
+            speed: document.getElementById('speed').value,
+            mode: document.getElementById('mode').value,
+            grad_type: document.getElementById('grad_type').value,
+            curvature_unit: document.getElementById('curvature_unit').value,
+        };
+    }
+    
+    // --- API Call Function ---
+    async function handleCalculateClick() {
+      const calculateBtn = document.getElementById("calculateBtn");
+      resultsBox.textContent = "Calculating... (Connecting to API)";
+      calculateBtn.disabled = true;
+      
+      const rawData = collectRawData();
+
+      try {
+        const response = await fetch(`${API_URL}/calculate_tractive_effort`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rawData),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || "Unknown error");
+        }
+
+        // Update detailed steps
+        resultsBox.textContent = data.report;
+        
+        // Update summary
+        const results = data.results; 
+        
+        res.te.textContent = `${results.te.toFixed(2)} kg`;
+        res.power.textContent = `${results.power.toFixed(2)} HP`;
+        res.ohe.textContent = `${results.ohe_current.toFixed(2)} A`;
+        res.t1.textContent = `${results.T1.toFixed(2)} kg`;
+        res.t2.textContent = `${results.T2.toFixed(2)} kg`;
+        res.t3.textContent = `${results.T3.toFixed(2)} kg`;
+        res.t4.textContent = `${results.T4.toFixed(2)} kg`;
+
+        lastInputData = rawData; 
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        const errorMsg = `--- ERROR ---\n${error.message}\n\nIs the FastAPI server running?`;
+        resultsBox.textContent = errorMsg;
+        lastInputData = null;
+      } finally {
+          calculateBtn.disabled = false;
+      }
+    }
+
+    // --- .docx download function ---
+    async function handleSaveDocumentClick() {
+        const saveDocBtn = document.getElementById("saveDocBtn");
+        
+        if (!lastInputData) {
+            resultsBox.textContent = "--- ERROR ---\nFirst, generate a successful report by clicking 'CALCULATE' button.";
+            return;
+        }
+        
+        saveDocBtn.textContent = "Generating...";
+        saveDocBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${API_URL}/download_tractive_effort_report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(lastInputData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to download file");
+            }
+
+            const blob = await response.blob();
+            const contentDisposition = response.headers.get('content-disposition');
+            let filename = "TE_Report.docx"; // Default
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (filenameMatch && filenameMatch.length > 1) {
+                    filename = filenameMatch[1];
+                }
+            }
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        } catch (error) {
+            console.error("Download Error:", error);
+            resultsBox.textContent = `--- DOCUMENT DOWNLOAD ERROR ---\n${error.message}`;
+        } finally {
+            saveDocBtn.textContent = "💾 SAVE DOCUMENT";
+            saveDocBtn.disabled = false;
+        }
+    }
+
+    // --- Add event listeners ---
+    document.getElementById("calculateBtn").addEventListener("click", handleCalculateClick);
+    document.getElementById("saveDocBtn").addEventListener("click", handleSaveDocumentClick);
+  </script>
+
+  <style>
+    .input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; width: 100%; margin-top: 4px; }
+    .input:disabled { background-color: #f3f4f6; color: #9ca3af; }
+    label { font-size: 0.875rem; font-weight: 500; color: #374151; display: block; }
+  </style>
+</body>
+</html>

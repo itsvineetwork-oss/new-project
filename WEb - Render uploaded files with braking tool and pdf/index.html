@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premnath Engineering - Calculation Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // --- SECURITY CHECK LOGIC ---
+    
+    // 1. Page load hote hi check karo user kaun hai
+    document.addEventListener("DOMContentLoaded", function() {
+      const token = localStorage.getItem("token");
+      const isLicenseActive = localStorage.getItem("is_license_active") === "true";
+      const authSection = document.getElementById("auth-section");
+
+      if (token) {
+        // Agar User Logged In hai
+        authSection.innerHTML = `
+          <span class="text-gray-300 mr-4 text-sm hidden md:inline">Welcome, Engineer!</span>
+          <button onclick="logout()" class="py-2 px-4 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 transition">Logout</button>
+          <a href="/profile" class="ml-2 py-2 px-4 text-sm font-medium text-blue-900 bg-yellow-400 rounded hover:bg-yellow-300 transition">
+            ${isLicenseActive ? 'License Active ✅' : 'Activate License 🔑'}
+          </a>
+        `;
+      } else {
+        // Agar User Logged Out hai
+        authSection.innerHTML = `
+          <a href="/login" class="py-2 px-4 font-medium text-gray-300 rounded hover:bg-blue-800 hover:text-white transition">Log In</a>
+          <a href="/signup" class="py-2 px-4 font-medium text-white bg-green-600 rounded hover:bg-green-500 transition">Sign Up</a>
+        `;
+      }
+    });
+
+    // 2. Logout Function
+    function logout() {
+      localStorage.clear(); // Saara data saaf karo
+      window.location.href = "/login"; // Login page par bhejo
+    }
+
+    // 3. Card Click Security Guard
+    function checkAccess(event, url) {
+      event.preventDefault(); // Direct open hone se roko
+      
+      const token = localStorage.getItem("token");
+      const isLicenseActive = localStorage.getItem("is_license_active") === "true";
+
+      // Check 1: Kya Login hai?
+      if (!token) {
+        alert("⚠️ Access Denied!\n\nPremnath Engineering Tools use karne ke liye Login karein.");
+        window.location.href = "/login";
+        return;
+      }
+      
+      // Check 2: Kya License hai?
+      if (!isLicenseActive) {
+        alert("🔒 License Required!\n\nAapke account par License Active nahi hai.\nKripya apni company key enter karein.");
+        window.location.href = "/profile";
+        return;
+      }
+      
+      // Agar sab sahi hai, to tool kholo
+      window.location.href = url;
+    }
+  </script>
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+  
+  <nav class="bg-slate-900 text-white shadow-lg">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between h-20 items-center">
+        
+        <a href="/" class="flex items-center gap-3">
+            <img src="/logo.png" alt="Premnath Logo" class="h-12 w-auto bg-white rounded p-1" />
+            <div class="flex flex-col">
+            </div>
+        </a>
+
+        <div id="auth-section" class="flex items-center space-x-2">
+          </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="bg-blue-900 text-white py-10 shadow-inner">
+      <div class="container mx-auto px-4 text-center">
+          <h1 class="text-3xl md:text-4xl font-bold mb-2">Engineering Calculation Suite</h1>
+          <p class="text-blue-200 text-sm md:text-base">Advanced tools for Railway & Hydraulic System Analysis</p>
+      </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-10 flex-grow">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+      <div class="bg-white rounded-xl shadow-md hover:shadow-2xl transition duration-300 border-t-4 border-blue-600 overflow-hidden flex flex-col">
+        <div class="p-6 flex-grow">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="font-bold text-xl text-slate-800">Hydraulic Motor</h2>
+            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold">CORE</span>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Calculate pump displacement (cc), motor efficiency, and achievable vehicle speed parameters.</p>
+        </div>
+        <div class="px-6 pb-6">
+            <button onclick="checkAccess(event, '/calculator')" class="w-full bg-slate-800 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                Launch Tool &rarr;
+            </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md hover:shadow-2xl transition duration-300 border-t-4 border-purple-600 overflow-hidden flex flex-col">
+        <div class="p-6 flex-grow">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="font-bold text-xl text-slate-800">Qmax Safety</h2>
+            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded font-bold">SAFETY</span>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Vertical force analysis (Qmax) based on rail profile diameter and material strength.</p>
+        </div>
+        <div class="px-6 pb-6">
+            <button onclick="checkAccess(event, '/qmax')" class="w-full bg-slate-800 text-white py-3 rounded-lg hover:bg-purple-700 transition font-semibold">
+                Launch Tool &rarr;
+            </button>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-md hover:shadow-2xl transition duration-300 border-t-4 border-orange-500 overflow-hidden flex flex-col">
+        <div class="p-6 flex-grow">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="font-bold text-xl text-slate-800">Load Distribution</h2>
+            <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded font-bold">ANALYSIS</span>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Analyze wheel load balancing (Q1-Q4) and check safety limits (ΔQ/Q) for Bogie/Axle.</p>
+        </div>
+        <div class="px-6 pb-6">
+            <button onclick="checkAccess(event, '/load_distribution')" class="w-full bg-slate-800 text-white py-3 rounded-lg hover:bg-orange-600 transition font-semibold">
+                Launch Tool &rarr;
+            </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md hover:shadow-2xl transition duration-300 border-t-4 border-green-600 overflow-hidden flex flex-col">
+        <div class="p-6 flex-grow">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="font-bold text-xl text-slate-800">Tractive Effort</h2>
+            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">POWER</span>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Calculate required effort, Rail Horsepower, and OHE current consumption.</p>
+        </div>
+        <div class="px-6 pb-6">
+            <button onclick="checkAccess(event, '/tractive_effort')" class="w-full bg-slate-800 text-white py-3 rounded-lg hover:bg-green-700 transition font-semibold">
+                Launch Tool &rarr;
+            </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md hover:shadow-2xl transition duration-300 border-t-4 border-red-600 overflow-hidden flex flex-col">
+        <div class="p-6 flex-grow">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="font-bold text-xl text-slate-800">Performance</h2>
+            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded font-bold">GRAPHS</span>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Complete analysis: Speed vs Slope, Shunting capability, and Torque curve graphs.</p>
+        </div>
+        <div class="px-6 pb-6">
+            <button onclick="checkAccess(event, '/vehicle_performance')" class="w-full bg-slate-800 text-white py-3 rounded-lg hover:bg-red-700 transition font-semibold">
+                Launch Tool &rarr;
+            </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md hover:shadow-2xl transition duration-300 border-t-4 border-indigo-600 overflow-hidden flex flex-col">
+        <div class="p-6 flex-grow">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="font-bold text-xl text-slate-800">Braking Performance</h2>
+            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold">SAFETY</span>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Calculate stopping distances and braking forces based on DIN EN 15746-2:2021-05 standards.</p>
+        </div>
+        <div class="px-6 pb-6">
+            <button onclick="checkAccess(event, '/braking')" class="w-full bg-slate-800 text-white py-3 rounded-lg hover:bg-indigo-700 transition font-semibold">
+                Launch Tool &rarr;
+            </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="bg-slate-900 text-gray-400 text-center p-6 mt-auto">
+    <p class="text-sm">© 2025 Premnathrail Engineering Works. All rights reserved.</p>
+    <p class="text-xs mt-1 text-gray-600">Authorized Personnel Only.</p>
+  </footer>
+</body>
+</html>

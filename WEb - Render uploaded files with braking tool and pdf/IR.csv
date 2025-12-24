@@ -1,0 +1,8 @@
+Parameter,Value
+gradient_input,2.5
+gradient_type,1 in G
+max_curve,10
+max_curve_unit,degree
+max_superelevation,150
+max_cant,100
+track_gauge,1676
